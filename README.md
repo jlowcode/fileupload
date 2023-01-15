@@ -5,7 +5,7 @@ O elemento fileupload permite fazer upload de arquivos para o servidor ou para u
 ### Sumário
 - [Configurações](#Configurações)
   - [Opções](#opções)
-  - [Display]
+  - [Display](#display)
   - [Thumbnails]
   - [Crop]
   - [Storage]
@@ -38,3 +38,26 @@ O elemento fileupload permite fazer upload de arquivos para o servidor ou para u
 - `Disable Safety Check`: Definir como Sim ignorará a verificação isSafeFile() do Joomla, que verifica nomes suspeitos e possíveis conteúdos do PHP que podem indicar uma tentativa de invasão. Ative esta opção apenas se tiver certeza absoluta de que precisa, por exemplo, se precisar fazer upload de arquivos ZIP contendo PHP e se seu formulário estiver adequadamente protegido contra usuários não autorizados.
 - `Clean Filename`: O comportamento padrão para nomes de arquivo é que o Fabrik substitui todos os caracteres não alfanuméricos (AZ, az, 0-9), exceto - e _ por _. Isso evita problemas com sistemas operacionais e sistemas de arquivos que não suportam conjuntos de caracteres multibyte ou não permitem determinados caracteres. Se você precisar usar nomes Unicode, defina como Não, mas lembre-se de que isso pode resultar em nomes de arquivo inutilizáveis.
 - `Rename Code`: OPCIONAL - Código PHP para renomear o arquivo carregado. O nome do arquivo original está em $filename. Os dados estão em $formModel->formData, mas NÃO estarão lá se o upload for AJAX. DEVE retornar um nome válido, com a mesma extensão do arquivo carregado. Não anexe nomes de pastas, apenas retorne um nome foo.ext simples.
+
+### Display
+
+- `Default image`: Insira o caminho para uma imagem a ser exibida, se nenhuma estiver disponível no momento.
+- `Link to file`: Crie um *link* para o arquivo quando estiver na exibição de lista. Obrigatório se você quiser usar uma caixa de luz na visualização da tabela.
+- `Show media in list`: Se definido como sim, o Fabrik mostrará a mídia na lista. Dependendo do tipo de mídia, pode ser uma imagem, flash, vídeo ou um ícone representando um documento.
+    Selecione sim se desejar que a mídia carregada apareça na exibição de lista, selecione não para mostrar o caminho da imagem. Observe que esta opção é substituída se você escolher uma pasta de ícones para o elemento. A opção de apresentação de slides é 'trabalho em andamento', relevante apenas se você estiver usando o upload AJAX com vários arquivos e exibirá uma apresentação de slides simples em primeira exibição.
+- `Show image in form`: Mostra a mídia carregada anteriormente ao editar o formulário. A opção de apresentação de slides é 'trabalho em andamento' e relevante apenas se você estiver usando o upload AJAX, com várias imagens, que exibirá uma apresentação de slides simples em exibição detalhada.
+      - `Não`: Mostrará o caminho da imagem.
+      - `Cortado, depois a miniatura e depois 'tamanho completo'`: (Se Cortado/Miniatura não estiver definido para ser criado, isso mostrará a imagem em tamanho real.
+      - `Tamanho normal`
+      - `Apresentação de slides`
+- `Show image in email`: Se definido como Sim, um espaço reservado de elemento no corpo do e-mail incorporará a(s) imagem(ns). Se não for selecionado, o(s) caminho(s) da imagem será(ão) mostrado(s).
+- `Image lib`: A biblioteca de imagens que você deseja usar para processar imagens (usada ao redimensionar e recortar qualquer imagem carregada)
+- `Max width`: Ao fazer upload de imagens, especifica a largura máxima em pixels que essa imagem pode ter, se a imagem enviada for mais larga que esse valor, a imagem principal será reduzida para que sua largura não seja maior que esse valor. por exemplo, 400, deixe em branco para não redimensionar.
+- `Max height`: Ao fazer *upload* de imagens, especifica a altura máxima em pixels que essa imagem pode ter, se a imagem enviada for maior que esse valor, a imagem principal é reduzida para que sua altura não seja maior que esse valor. por exemplo, 400, deixe em branco para não redimensionar.
+- `Image quality %`: Um valor percentual usado ao redimensionar a imagem principal, miniaturas e imagens cortadas. 100 = sem compressão, 0 = compressão máxima.
+- `Título do Elemento`: Se `Show image in form` ou `Show media in list` for selecionado, os dados contidos no elemento de título serão usados no título do *lightbox*.
+- `Map element`: OPCIONAL - se especificado, tentaremos extrair informações de geotag EXIF da imagem e definir esse elemento do mapa de acordo. Funciona bem em conjunto com o recurso de captura móvel, para captura de imagem do celular.
+- `Restrict lightbox nav`: Esta opção só é aplicável a exibições de detalhes.
+    Se definido como sim, qualquer navegação lightbox será limitada às imagens do elemento.
+    Se definido como não, a navegação lightbox incluirá todas as imagens dos elementos de upload de arquivo que também têm essa opção definida como Não
+
