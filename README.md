@@ -6,7 +6,7 @@ The fileupload element allows you to upload files to the server, or to an amazon
   - [Options](#options)
   - [Display](#display)
   - [Thumbnail](#thumbnail)
-  - Crop
+  - [Crop](#crop)
   - Storage
   - Use AJAX upload
   - Downloads
@@ -92,4 +92,17 @@ The fileupload element allows you to upload files to the server, or to an amazon
 - `Thumbnail width (px)`: When creating the thumbnail this specifies the maximum width in pixels that the thumbnail can be, if the thumbnail is wider than this value the main image is scaled down so that its width is no greater than this value.
 
 - `Thumbnail height (px)`: When creating the thumbnail this specifies the maximum height in pixels that that image can be, if the thumbnail is higher than this value the thumbnail is scaled down so that its height is no greater than this value.
+
+### Crop
+
+
+ - `Crop`: Enabling the crop option allow for your users to create a cropped version of the file. You MUST use Ajax Upload for cropping to work. Not available in IE8 or lower.
+
+- `Width`: The width of the cropped image.
+
+- `Height`: The cropped image height
+
+- `Cropped window width`
+
+- `Cropped window height`
 
