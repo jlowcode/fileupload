@@ -1,21 +1,21 @@
 # Fileupload Element 
 
-O elemento fileupload permite fazer upload de arquivos para o servidor ou para uma conta amazon. Ele também permite que você carregue vários arquivos por vez, por meio de um upload ajax. Se você usar esta opção e tiver o número máximo de arquivos permitidos definido para mais de um, os dados de cada arquivo carregado serão armazenados em linhas individuais em uma tabela 'vinculada' chamada ' originaltable_ repeat_ elementname'.
+The fileupload element allows you to upload files to the server, or to an amazon account. It also allows you to upload multiple files at a time, via an ajax upload. If you use this option and you have the maximum number of allowed files set to more than one, then the data for each uploaded file is stored in individual rows in a 'linked' table called, *'originaltable_repeat_elementname'*.
 
-### Sumário
-- [Configurações](#Configurações)
-  - [Opções](#opções)
-  - [Display](#display)
-  - [Thumbnails]
-  - [Crop]
-  - [Storage]
-  - [Ajax uploads]
-  - [Downloads]
-  - [Exportar]
+**Contents**
+  - Options(#options)
+  - Display
+  - Thumbnail
+  - Crop
+  - Storage
+  - Use AJAX upload
+  - Downloads
+  - Export
+  - Example - File rename on upload
+  - Example: File upload with full word indexing for search
+  - Tips
 
-## Configurações
-
-### Opções
+### Options
 
 - `Maximum File Size (Kb)`: O tamanho máximo em Kb de qualquer arquivo carregado por este elemento.
 - `Device Capture`: Para dispositivos como tablets e telefones celulares, defina o campo de upload de arquivo para acionar a captura de imagens, áudio ou vídeo como um arquivo para upload. **Observação** - o comportamento do dispositivo depende do tipo de dispositivo e do navegador usado e não é garantido.
