@@ -2,10 +2,10 @@
 
 The fileupload element allows you to upload files to the server, or to an amazon account. It also allows you to upload multiple files at a time, via an ajax upload. If you use this option and you have the maximum number of allowed files set to more than one, then the data for each uploaded file is stored in individual rows in a 'linked' table called, *'originaltable_repeat_elementname'*.
 
-**Contents**
+## **Contents**
   - [Options](#options)
   - [Display](#display)
-  - Thumbnail
+  - [Thumbnail](#thumbnail)
   - Crop
   - Storage
   - Use AJAX upload
@@ -55,13 +55,10 @@ The fileupload element allows you to upload files to the server, or to an amazon
 - `Show media in list`: If set to yes then Fabrik will show the media in the list. Depending upon the media type this may be an image, flash, video or a icon representing a document. Select yes if you want the uploaded media to appear in the list view, select no to show the image path. Note this option is overridden if you choose an icon folder for the element. The slideshow option is 'work in progress', only relevant if you are using AJAX uploading with multiple files, and will display a simple slideshow in ist view.
 
 - `Show media in form`: Show previously uploaded media when editing the form. The slideshow option is 'work in progress' and only relevant if you are using AJAX uploading, with multiple images, which will display a simple slideshow in detail view.
-          - `No` (will show the image path)
-          
-          - `Cropped, then thumbnail then 'full sized'` - (If Cropped/Thumbnail not set to be created, then this will show the full sized image
-         
-          - `Full sized`
-          
-          - `Slideshow`
+    - `No` (will show the image path)
+    - `Cropped, then thumbnail then 'full sized'` - (If Cropped/Thumbnail not set to be created, then this will show the full sized image
+    - `Full sized`
+    - `Slideshow`
     
 - `Show image in email`: If set to Yes, an element placeholder in the email body will embed the image(s). If no selected then the image path(s) will be shown.
 
@@ -79,6 +76,20 @@ The fileupload element allows you to upload files to the server, or to an amazon
     
 - `Restrict lightbox nav`: This option is only applicable to details views.
     If set to yes, then any lightbox navigation will be limited to the element's images.
-    If set to no then the lightbox navigation will include all fileupload elements' images which also have this option set to No
+    If set to no then the lightbox navigation will include all fileupload elements' images which also have this option set to No.
 
+### Thumbnail
+
+- `Create thumnails`: If set to yes and an image uploaded then a thumbnail image is also created. This image is used in preference to the main image when rendering data in the table, form and detailed views.
+
+- `Image thumbnail from PDF (1st page)`: Creates image thumbnail as preview of PDF file. ATM: 1) only from the 1st page (no choice) 2) needs ImageMagick (with Ghostscript or at least is_callable('exec') should return true).
+
+- `Thumbnail directory`: The directory to store the thumbnail images in.
+
+- `Thumbnail prefix`: The prefix to attach the the thumbnail image name.
+
+- `Thumbnail suffix`: The prefix to attach the the thumbnail image name.
+- `Thumbnail width (px)`: When creating the thumbnail this specifies the maximum width in pixels that the thumbnail can be, if the thumbnail is wider than this value the main image is scaled down so that its width is no greater than this value.
+
+- `Thumbnail height (px)`: When creating the thumbnail this specifies the maximum height in pixels that that image can be, if the thumbnail is higher than this value the thumbnail is scaled down so that its height is no greater than this value.
 
