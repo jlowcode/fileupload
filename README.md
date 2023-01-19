@@ -4,7 +4,7 @@ The fileupload element allows you to upload files to the server, or to an amazon
 
 **Contents**
   - [Options](#options)
-  - Display
+  - [Display](#display)
   - Thumbnail
   - Crop
   - Storage
@@ -48,23 +48,37 @@ The fileupload element allows you to upload files to the server, or to an amazon
 
 ### Display
 
-- `Default image`: Insira o caminho para uma imagem a ser exibida, se nenhuma estiver disponível no momento.
-- `Link to file`: Crie um *link* para o arquivo quando estiver na exibição de lista. Obrigatório se você quiser usar uma caixa de luz na visualização da tabela.
-- `Show media in list`: Se definido como sim, o Fabrik mostrará a mídia na lista. Dependendo do tipo de mídia, pode ser uma imagem, flash, vídeo ou um ícone representando um documento.
-    Selecione sim se desejar que a mídia carregada apareça na exibição de lista, selecione não para mostrar o caminho da imagem. Observe que esta opção é substituída se você escolher uma pasta de ícones para o elemento. A opção de apresentação de slides é 'trabalho em andamento', relevante apenas se você estiver usando o upload AJAX com vários arquivos e exibirá uma apresentação de slides simples em primeira exibição.
-- `Show image in form`: Mostra a mídia carregada anteriormente ao editar o formulário. A opção de apresentação de slides é 'trabalho em andamento' e relevante apenas se você estiver usando o upload AJAX, com várias imagens, que exibirá uma apresentação de slides simples em exibição detalhada.
-      - `Não`: Mostrará o caminho da imagem.
-      - `Cortado, depois a miniatura e depois 'tamanho completo'`: (Se Cortado/Miniatura não estiver definido para ser criado, isso mostrará a imagem em tamanho real.
-      - `Tamanho normal`
-      - `Apresentação de slides`
-- `Show image in email`: Se definido como Sim, um espaço reservado de elemento no corpo do e-mail incorporará a(s) imagem(ns). Se não for selecionado, o(s) caminho(s) da imagem será(ão) mostrado(s).
-- `Image lib`: A biblioteca de imagens que você deseja usar para processar imagens (usada ao redimensionar e recortar qualquer imagem carregada)
-- `Max width`: Ao fazer upload de imagens, especifica a largura máxima em pixels que essa imagem pode ter, se a imagem enviada for mais larga que esse valor, a imagem principal será reduzida para que sua largura não seja maior que esse valor. por exemplo, 400, deixe em branco para não redimensionar.
-- `Max height`: Ao fazer *upload* de imagens, especifica a altura máxima em pixels que essa imagem pode ter, se a imagem enviada for maior que esse valor, a imagem principal é reduzida para que sua altura não seja maior que esse valor. por exemplo, 400, deixe em branco para não redimensionar.
-- `Image quality %`: Um valor percentual usado ao redimensionar a imagem principal, miniaturas e imagens cortadas. 100 = sem compressão, 0 = compressão máxima.
-- `Título do Elemento`: Se `Show image in form` ou `Show media in list` for selecionado, os dados contidos no elemento de título serão usados no título do *lightbox*.
-- `Map element`: OPCIONAL - se especificado, tentaremos extrair informações de geotag EXIF da imagem e definir esse elemento do mapa de acordo. Funciona bem em conjunto com o recurso de captura móvel, para captura de imagem do celular.
-- `Restrict lightbox nav`: Esta opção só é aplicável a exibições de detalhes.
-    Se definido como sim, qualquer navegação lightbox será limitada às imagens do elemento.
-    Se definido como não, a navegação lightbox incluirá todas as imagens dos elementos de upload de arquivo que também têm essa opção definida como Não
+- `Default image`: Enter the path to a image to display if none currently available
+
+- `Link to file`: Create a link to the file when in the list view. Required if you want to use a lightbox in the table view.
+
+- `Show media in list`: If set to yes then Fabrik will show the media in the list. Depending upon the media type this may be an image, flash, video or a icon representing a document. Select yes if you want the uploaded media to appear in the list view, select no to show the image path. Note this option is overridden if you choose an icon folder for the element. The slideshow option is 'work in progress', only relevant if you are using AJAX uploading with multiple files, and will display a simple slideshow in ist view.
+
+- `Show media in form`: Show previously uploaded media when editing the form. The slideshow option is 'work in progress' and only relevant if you are using AJAX uploading, with multiple images, which will display a simple slideshow in detail view.
+          - `No` (will show the image path)
+          
+          - `Cropped, then thumbnail then 'full sized'` - (If Cropped/Thumbnail not set to be created, then this will show the full sized image
+         
+          - `Full sized`
+          
+          - `Slideshow`
+    
+- `Show image in email`: If set to Yes, an element placeholder in the email body will embed the image(s). If no selected then the image path(s) will be shown.
+
+- `Image lib`: The image library you wish to use to process images with (used when resizing and cropping any uploaded images).
+
+- `Max width`: When uploading images this specifies the maximum width in pixels that that image can be, if the uploaded image is wider than this value the main image is scaled down so that its width is no greater than this value. e.g. 400, leave blank for no resizing.
+
+- `Max height`: When uploading images this specifies the maximum height in pixels that that image can be, if the uploaded image is higher than this value the main image is scaled down so that its height is no greater than this value. e.g. 400, leave blank for no resizing.
+
+- `Image quality %`: A percentage value used when resizing the main image, thumbnails and crop images. 100 = no compression, 0 = maximum compression.
+    
+- `Title element`: If either 'show media in form' or 'show media in list' selected then the data contained within the title element will be used in the lightbox title.
+   
+- `Map element`: - Optional - if specified, we will atempt to extract EXIF geo tag information from the image, and set this map element accordingly. Works well in conjuction with the mobile capture feature, for cell phone image capture.
+    
+- `Restrict lightbox nav`: This option is only applicable to details views.
+    If set to yes, then any lightbox navigation will be limited to the element's images.
+    If set to no then the lightbox navigation will include all fileupload elements' images which also have this option set to No
+
 
