@@ -17,6 +17,8 @@ The fileupload element allows you to upload files to the server, or to an amazon
 
 ### Options
 
+<img src="/imagens/1.png" width="900px" />
+
 - `Maximum file size`: The maximum file size in Kb of any file uploaded by this element
 
 - `Device Capture`: For devices such as tablets and mobile phones, set the file upload field to trigger capture of pictures, audio or video as a file to upload. Note: The behaviour of the device is dependent on the type of device and the browser used and is not guaranteed.
@@ -47,6 +49,8 @@ The fileupload element allows you to upload files to the server, or to an amazon
 - `Rename Code`: - OPTIONAL - PHP code to rename the uploaded file. Original filename is in $filename. Data is in $formModel->formData, but will NOT be there if AJAX uploading. MUST return a valid name, with the same extension as the uploaded file. Do not prepend folder names, just return a simple foo.ext name.
 
 ### Display
+
+<img src="/imagens/2.png" width="900px" />
 
 - `Default image`: Enter the path to a image to display if none currently available
 
@@ -80,6 +84,8 @@ The fileupload element allows you to upload files to the server, or to an amazon
 
 ### Thumbnail
 
+<img src="/imagens/3.png width="900px" />
+
 - `Create thumnails`: If set to yes and an image uploaded then a thumbnail image is also created. This image is used in preference to the main image when rendering data in the table, form and detailed views.
 
 - `Image thumbnail from PDF (1st page)`: Creates image thumbnail as preview of PDF file. ATM: 1) only from the 1st page (no choice) 2) needs ImageMagick (with Ghostscript or at least is_callable('exec') should return true).
@@ -95,6 +101,8 @@ The fileupload element allows you to upload files to the server, or to an amazon
 
 ### Crop
 
+<img src="/imagens/4.png" width="900px" />
+
  - `Crop`: Enabling the crop option allow for your users to create a cropped version of the file. You MUST use Ajax Upload for cropping to work. Not available in IE8 or lower.
 
 - `Width`: The width of the cropped image.
@@ -106,6 +114,8 @@ The fileupload element allows you to upload files to the server, or to an amazon
 - `Cropped window height`
 
 ### Storage
+
+<img src="/imagens/5.png" width="900px" />
 
 - `Storage type`:
     - `Filesystem`: Your files will be stored on your server.
@@ -138,6 +148,8 @@ The fileupload element allows you to upload files to the server, or to an amazon
 
 ### Use AJAX upload
 
+<img src="/imagens/6.png" width="900px" />
+
 Allows to upload multiple files at a time (and per row). An additional one-to-many database table yourtable_repeat_yourelement will be created when ajax mode is choosen.
 
 **NOTE!** Until a good solution is found the fileupload element in ajax mode doesn't work within any joined group, repeated or not.
@@ -154,6 +166,8 @@ Allows to upload multiple files at a time (and per row). An additional one-to-ma
 
 
 ### Downloads 
+
+<img src="/imagens/7.png" width="900px" />
 
 - `Use download script`: If selected, the link to the file will be a download script, forcing the browser to download the file rather than performing the normal MIME type based action. This option overrides other display options like Show Media In Form / Table. If a Title Element is specified, this will be used as the link title, otherwise the filename will be used. You have the option to specify this for the table view, detailed view or for both.
     
@@ -174,6 +188,8 @@ Allows to upload multiple files at a time (and per row). An additional one-to-ma
 - `Log downloads` - OPTIONAL - if you have selected one of the Download Scripts options, you may enable logging of download to the standard jos_fabrik_logs table.
 
 ### Export
+
+<img src="/imagens/8.png" width="900px" />
 
 - `CSV format`: Determines how to present the fileupload data when exporting to csv:
      - `Relative path`: e.g. images/stories/myimage.jpg (Default).
