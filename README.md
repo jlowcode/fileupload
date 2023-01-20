@@ -8,7 +8,7 @@ The fileupload element allows you to upload files to the server, or to an amazon
   - [Thumbnail](#thumbnail)
   - [Crop](#crop)
   - [Storage](#storage)
-  - Use AJAX upload
+  - [Use AJAX upload](#use-ajax-upload)
   - Downloads
   - Export
   - Example - File rename on upload
@@ -153,3 +153,24 @@ Allows to upload multiple files at a time (and per row). An additional one-to-ma
 - `Chunk size`: Not working at time of writing (May 2021) (Defines if the file should be uploaded in 'chunks'. Set to 0 to upload the entire file in one go. Otherwise define an integer in Kb.)
 
 
+### Downloads 
+
+- `Use download script`: If selected, the link to the file will be a download script, forcing the browser to download the file rather than performing the normal MIME type based action. This option overrides other display options like Show Media In Form / Table. If a Title Element is specified, this will be used as the link title, otherwise the filename will be used. You have the option to specify this for the table view, detailed view or for both.
+    
+- `Open in browser`:  If yes, opens the file in the browser instead of forcing it to be downloaded. NOTE - this will only work for MIME types that browsers understand, like PDF.
+    
+- `Force Download Script on edit view` - If selected, even on edit view, the download script will be used instead of the link to the file. Thus allowing to protect the download directory with a htaccess file.
+   
+- `Access element` - OPTIONAL - An element whose value contains the Joomla access level that can download the file. This may often be an access element. If none selected then the download rights are managed by the elements Access and Read only access options.
+    
+- `No access image`: If the user can't download the file then show this image, located in ./media/com_fabrik/images.
+    
+- `No access URL`:  A URL that provides a link to a page for users who do not have the correct access level to download the file.
+    
+- `Access image`: If the user can download the file then show this image, located in ./media/com_fabrik/images. If none selected then the file name is shown.
+
+- `Hit counter` - OPTIONAL - if you have selected one of the Download Script options, you may specify an element on this form to use as a hit counter, which will be incremented whenever the file is downloaded. NOTE - this feature will NOT work with a hit counter element in a joined and/or repeated group!
+    
+- `Log downloads` - OPTIONAL - if you have selected one of the Download Scripts options, you may enable logging of download to the standard jos_fabrik_logs table.
+
+### csv
