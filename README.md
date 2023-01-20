@@ -9,11 +9,11 @@ The fileupload element allows you to upload files to the server, or to an amazon
   - [Crop](#crop)
   - [Storage](#storage)
   - [Use AJAX upload](#use-ajax-upload)
-  - [Downloads](#download)
+  - [Downloads](#downloads)
   - [Export](#export)
-    - Example - File rename on upload
-    - Example: File upload with full word indexing for search
-  - Tips
+    - [Example - File rename on upload](#example--file-rename-on-upload)
+    - [Example - File upload with full word indexing for search](#example:-file-upload-with-full-word-indexing-for-search)
+  - [Tips](#tips)
 
 ### Options
 
@@ -191,29 +191,29 @@ Allows to upload multiple files at a time (and per row). An additional one-to-ma
     
 - You can adjust the values to meet your needs - this is just one possible example.
 
-      ```php
-            // use Joomla file utils
-            jimport( 'joomla.filesystem.file' );
-            // get the original file and split it into parts
-            $old = ($formModel->formData['file']);
-            $oldParts = pathinfo($old);
-            // in this example we're using the id as the new filename
-            $sid = $formModel->formData['id'];
-            //create the new file (path and name)
-            $new = $oldParts['dirname'].'/'.$sid.'.'.$oldParts['extension'];
-            // update the file itself
-            JFile::move(JPATH_SITE.$old, JPATH_SITE.$new);
-            // update the data
-            $formModel->updateFormData('file', $new, true);
-            // update the db
-            $object = new stdClass();
-            // Must be a valid primary key value.
-            $object->id = $sid;
-            // new path + name
-            $object->file = $new;
-            // Update the data in the db
-            $result = JFactory::getDbo()->updateObject('ep_submission', $object, 'id');
-      ```
+```php
+    // use Joomla file utils
+    jimport( 'joomla.filesystem.file' );
+    // get the original file and split it into parts
+    $old = ($formModel->formData['file']);
+    $oldParts = pathinfo($old);
+    // in this example we're using the id as the new filename
+    $sid = $formModel->formData['id'];
+    //create the new file (path and name)
+    $new = $oldParts['dirname'].'/'.$sid.'.'.$oldParts['extension'];
+    // update the file itself
+    JFile::move(JPATH_SITE.$old, JPATH_SITE.$new);
+    // update the data
+    $formModel->updateFormData('file', $new, true);
+    // update the db
+    $object = new stdClass();
+    // Must be a valid primary key value.
+    $object->id = $sid;
+    // new path + name
+    $object->file = $new;
+    // Update the data in the db
+    $result = JFactory::getDbo()->updateObject('ep_submission', $object, 'id');
+  ```
 
 #### Example: File upload with full word indexing for search
 
