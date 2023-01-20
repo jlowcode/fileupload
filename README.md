@@ -95,7 +95,6 @@ The fileupload element allows you to upload files to the server, or to an amazon
 
 ### Crop
 
-
  - `Crop`: Enabling the crop option allow for your users to create a cropped version of the file. You MUST use Ajax Upload for cropping to work. Not available in IE8 or lower.
 
 - `Width`: The width of the cropped image.
@@ -106,3 +105,15 @@ The fileupload element allows you to upload files to the server, or to an amazon
 
 - `Cropped window height`
 
+### Storage
+
+- `Storage type`:
+        - `Filesystem`: Your files will be stored on your server.
+        - `Amazon s3 (SDK)`: Your files will be stored in Amazon's S3 cloud storage service.
+        - `Amazon S3` Deprecated (uses older, unsupported API).
+- `Amazon s3 access key id`: Get this information when you sign up for an S3 account.
+- `Amazon s3 secret key`: Get this information when you sign up for an S3 account.
+- `Amazon storage location`: Select the geographical area which is closest to the majority of your users.
+- `Bucket name`: A bucket is Amzon's terminology for a folder, select the name of the bucket you want to store the files in. Has to be unique across all of S3, so something with your domain name in it, like myfiles-mydomain. Don't use periods (myfiles.mydomain) if you want to serve using https. The bucket will be created automatically if it doesn't exist.
+
+NOTE - when using Amazon S3, if you see errors about CORS in the browser console, you will need to go to your S3 console and add a CORS policy on your bucket:
