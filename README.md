@@ -7,7 +7,7 @@ The fileupload element allows you to upload files to the server, or to an amazon
   - [Display](#display)
   - [Thumbnail](#thumbnail)
   - [Crop](#crop)
-  - Storage
+  - [Storage](#storage)
   - Use AJAX upload
   - Downloads
   - Export
@@ -108,12 +108,48 @@ The fileupload element allows you to upload files to the server, or to an amazon
 ### Storage
 
 - `Storage type`:
-        - `Filesystem`: Your files will be stored on your server.
-        - `Amazon s3 (SDK)`: Your files will be stored in Amazon's S3 cloud storage service.
-        - `Amazon S3` Deprecated (uses older, unsupported API).
-- `Amazon s3 access key id`: Get this information when you sign up for an S3 account.
-- `Amazon s3 secret key`: Get this information when you sign up for an S3 account.
-- `Amazon storage location`: Select the geographical area which is closest to the majority of your users.
-- `Bucket name`: A bucket is Amzon's terminology for a folder, select the name of the bucket you want to store the files in. Has to be unique across all of S3, so something with your domain name in it, like myfiles-mydomain. Don't use periods (myfiles.mydomain) if you want to serve using https. The bucket will be created automatically if it doesn't exist.
+    - `Filesystem`: Your files will be stored on your server.
+    - `Amazon s3 (SDK)`: Your files will be stored in Amazon's S3 cloud storage service.
+    - `Amazon S3`: Deprecated (uses older, unsupported API).
+- `Amazon storage options`: 
 
-NOTE - when using Amazon S3, if you see errors about CORS in the browser console, you will need to go to your S3 console and add a CORS policy on your bucket:
+- `Amazon s3 access key id`: Get this information when you sign up for an S3 account.
+
+- `Amazon s3 secret key`: Get this information when you sign up for an S3 account.
+
+- `Amazon storage location`: Select the geographical area which is closest to the majority of your users.
+
+- `SSL`: Serve the documents/images over SSL.
+
+- `Encrypt`: Use Amazon's server side AES256 encyption for uploaded files.
+
+-  `Bucket name`: A bucket is Amzon's terminology for a folder, select the name of the bucket you want to store the files in. Has to be unique across all of S3, so something with your domain name in it, like myfiles-mydomain. Don't use periods (myfiles.mydomain) if you want to serve using https. The bucket will be created automatically if it doesn't exist.
+
+- `Include server path`: Use Amazon's server side AES256 encyption for uploaded files.
+
+- `Access`: Set the access level for the uploaded file, note if set to private users will not be able to see/download the file UNLESS you enable the Download Script option above.
+
+- `Skip Exist Check`: Normally when rendering a file link in table or form views we check to see if the file exists. When using s3 storage, this can significantly slow down rendering of the table, by over a second per row. This setting lets you turn that check off.
+
+- `s3 Auth URL`:  If using Private ACL for s3 files, normal URLs will not work. You may optionally provide authenticated links by specifying a number of seconds in this option. This will create s3 links which will work for the number of seconds you specify from the time the table or form is rendered.
+
+
+**NOTE** - when using Amazon S3, if you see errors about CORS in the browser console, you will need to go to your S3 console and add a CORS policy on your bucket.
+
+### Use AJAX upload
+
+Allows to upload multiple files at a time (and per row). An additional one-to-many database table yourtable_repeat_yourelement will be created when ajax mode is choosen.
+
+**NOTE!** Until a good solution is found the fileupload element in ajax mode doesn't work within any joined group, repeated or not.
+
+- `Use Ajax upload`: Allow for multiple uploads. NOTE that this changes the way Fabrik stores your element data, so changing this selection once you have data in your table will lose any links to existing uploaded content.
+    
+- `Run times`: Comma separated list of runtimes to use. Possible values: html5,flash,silverlight,browserplus,html4.
+
+- `Drop box width`: Value (px) of the width of the div that shows the list of selected files.
+    
+- `Drop box height`: Value (px) of the height of the div that shows the list of selected files.
+
+- `Chunk size`: Not working at time of writing (May 2021) (Defines if the file should be uploaded in 'chunks'. Set to 0 to upload the entire file in one go. Otherwise define an integer in Kb.)
+
+
