@@ -9,10 +9,10 @@ The fileupload element allows you to upload files to the server, or to an amazon
   - [Crop](#crop)
   - [Storage](#storage)
   - [Use AJAX upload](#use-ajax-upload)
-  - Downloads
-  - Export
-  - Example - File rename on upload
-  - Example: File upload with full word indexing for search
+  - [Downloads](#download)
+  - [Export](#export)
+    - Example - File rename on upload
+    - Example: File upload with full word indexing for search
   - Tips
 
 ### Options
@@ -174,3 +174,12 @@ Allows to upload multiple files at a time (and per row). An additional one-to-ma
 - `Log downloads` - OPTIONAL - if you have selected one of the Download Scripts options, you may enable logging of download to the standard jos_fabrik_logs table.
 
 ### csv
+
+- `CSV format`: Determines how to present the fileupload data when exporting to csv:
+     - `Relative path`: e.g. images/stories/myimage.jpg (Default).
+     - `Full path`: e.g. /var/www/html/images/stories/myimage.jpg
+     - `URL`
+     - `Raw file stream`: The binary data returned from JFile::read()
+     - `Base 64 encoded file stream`: A base64 encoded version of the raw file stream.
+- `JSON format`: Same as the CSV format except for when viewing the table data as JSON (Javascript Object Notation);
+
