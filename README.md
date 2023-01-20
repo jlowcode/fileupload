@@ -11,8 +11,8 @@ The fileupload element allows you to upload files to the server, or to an amazon
   - [Use AJAX upload](#use-ajax-upload)
   - [Downloads](#downloads)
   - [Export](#export)
-    - [Example - File rename on upload](#example--file-rename-on-upload)
-    - [Example - File upload with full word indexing for search](#example:-file-upload-with-full-word-indexing-for-search)
+    - [Example - File rename on upload](#example-file-rename-on-upload)
+    - [Example - File upload with full word indexing for search](#example-file-upload-with-full-word-indexing-for-search)
   - [Tips](#tips)
 
 ### Options
@@ -183,7 +183,7 @@ Allows to upload multiple files at a time (and per row). An additional one-to-ma
      - `Base 64 encoded file stream`: A base64 encoded version of the raw file stream.
 - `JSON format`: Same as the CSV format except for when viewing the table data as JSON (Javascript Object Notation);
 
-#### Example - File rename on upload
+#### Example: File rename on upload
 
 - This is an example of one way to rename a file on upload (this example assumes Fabrik 3.1+).
     
