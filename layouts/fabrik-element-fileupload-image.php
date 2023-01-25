@@ -38,7 +38,7 @@ else :
             </a>
 		<?php
         else :
-            if (($d->view === 'details') && ($d->makeLink)) :
+            if (($d->view === 'details' || $d->simulate_context) && ($d->makeLink)) :
                 ?>
                 <a href="<?php echo $d->fullSize; ?>" title="<?php if (($d->caption) && ($d->inFormView)) echo $d->caption; else echo $d->title; ?>" <?php if ($d->inFormView) echo "data-lightbox={$d->elementName} "; echo $d->lightboxAttrs; ?>>
                 <?php echo $img;?>

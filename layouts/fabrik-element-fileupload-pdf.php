@@ -8,7 +8,7 @@ $ext = JFile::getExt($d->filename);
 
     echo "<div style=\"vertical-align: middle;text-align: center;\">";
 
-    if (!$d->inFormView) {
+    if (!$d->inFormView && !$d->simulate_context) {
         echo "<a href='{$d->url_details}'>";
     }
     else {
