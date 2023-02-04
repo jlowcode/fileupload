@@ -17,7 +17,8 @@ The fileupload element allows you to upload files to the server, or to an amazon
 
 ### Options
 
-<img src="/imagens/1.png" width="900px" />
+<img src="/imagens/1pt.png" width="900px" />
+<img src="/imagens/1-2pt.png" width="900px" />
 
 - `Maximum file size`: The maximum file size in Kb of any file uploaded by this element
 
