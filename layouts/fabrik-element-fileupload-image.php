@@ -31,14 +31,14 @@ else :
             <!--width:<?php //echo $d->width;?>px;height:<?php //echo $d->height;?>px;-->
         <?php
 		endif;
-		if ($d->view === 'list') :
+		if ($d->view === 'list' && !$d->force_view) :
 			?>
             <a href="<?php echo $d->url_details; ?>">
                 <?php echo $nolinkImg;?>
             </a>
 		<?php
         else :
-            if (($d->view === 'details' || $d->simulate_context) && ($d->makeLink)) :
+            if (($d->view === 'details' || $d->force_view) && ($d->makeLink)) :
                 ?>
                 <a href="<?php echo $d->fullSize; ?>" title="<?php if (($d->caption) && ($d->inFormView)) echo $d->caption; else echo $d->title; ?>" <?php if ($d->inFormView) echo "data-lightbox={$d->elementName} "; echo $d->lightboxAttrs; ?>>
                 <?php echo $img;?>

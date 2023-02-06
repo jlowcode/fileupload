@@ -161,7 +161,7 @@ class ImageRenderModel
         }
 
 		$displayData->inFormView    = $inFormView;
-        $displayData->simulate_context = (bool) $params->get('simulate_context');
+        $displayData->force_view = (bool) $params->get('force_view');
 		$displayData->elementName   = $model->element->name;
 
 		$displayData->url_details = COM_FABRIK_LIVESITE . "index.php?option=com_fabrik&view=details&Itemid={$input->get('Itemid')}&formid={$formModel->getId()}&rowid={$thisRow->__pk_val}&listid={$listModel->getId()}";
