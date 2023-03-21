@@ -1426,8 +1426,21 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                             return;
                         }
 
-                        var w = this.w * this.scale;
-                        var h = this.h * this.scale;
+                        //Scale calculation:
+                        //Sets the image scale according to the canvas dimensions
+                        widthWindow = parent.imageDefault.imagedim.w;
+                        heightWindow = parent.imageDefault.imagedim.h;
+                        scale = heightWindow / this.h;
+                        if(widthWindow > heightWindow) {
+                            scale = widthWindow / this.w;
+                        } else if(widthWindow == heightWindow) {
+                            if(this.w > this.h) {
+                                scale = widthWindow / this.w;
+                            }
+                        }
+
+                        var w = this.w * scale;
+                        var h = this.h * scale;
                         var x = this.x - w * 0.5;
                         var y = this.y - h * 0.5;
 
