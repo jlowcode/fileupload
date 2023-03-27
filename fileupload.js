@@ -15,6 +15,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
         },
         initialize: function (element, options) {
             var self = this;
+
             this.setPlugin('fileupload');
             this.parent(element, options);
             this.container = jQuery(this.container);
@@ -1364,6 +1365,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                 this.cropperCanvas.w = params.cropdim.w;
                 this.cropperCanvas.h = params.cropdim.h;
             }
+
             this.imgCanvas.w = params.mainimagedim.w;
             this.imgCanvas.h = params.mainimagedim.h;
             this.imgCanvas.x = params.imagedim !== undefined ? params.imagedim.x : 0;
@@ -1400,13 +1402,14 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
 
         makeImgCanvas: function () {
             var parent = this;
+
             return new CanvasItem({
                 id         : 'imgtocrop',
                 w          : this.imageDefault.imagedim.w,
                 h          : this.imageDefault.imagedim.h,
                 x          : 200,
                 y          : 200,
-                interactive: true,
+                interactive: true, 
                 rotation   : 0,
                 scale      : 1,
                 offset     : [0, 0],
@@ -1426,8 +1429,6 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                             return;
                         }
 
-                        //Scale calculation:
-                        //Sets the image scale according to the canvas dimensions
                         widthWindow = parent.imageDefault.imagedim.w;
                         heightWindow = parent.imageDefault.imagedim.h;
                         scale = heightWindow / this.h;
@@ -1443,17 +1444,21 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                         var h = this.h * scale;
                         var x = this.x - w * 0.5;
                         var y = this.y - h * 0.5;
+                        
+                        //Calculates the x and y coordinates in the middle of the image to center it
+                        var posX = (widthWindow / 2) - (w / 2);
+                        var posY = (heightWindow / 2) - (h / 2);
 
                         // standard Canvas rotation operation
                         ctx.save();
-                        ctx.translate(this.x, this.y);
+                        // ctx.translate(this.x, this.y);
                         ctx.rotate(this.rotation * Math.PI / 180);
 
                         this.hover ? ctx.strokeStyle = '#f00' : ctx.strokeStyle = '#000';
-                        ctx.strokeRect(w * -0.5, h * -0.5, w, h);
+                        ctx.strokeRect(posX, posY, w, h);
                         if (parent.img !== undefined) {
                             try {
-                                ctx.drawImage(parent.img, w * -0.5, h * -0.5, w, h);
+                                ctx.drawImage(parent.img, posX, posY, w, h);
                             } catch (err) {
                                 // only show this for debugging as if we upload a pdf then we get shown lots of these errors.
                                 // fconsole(err, parent.img, w * -0.5, h * -0.5, w, h);
