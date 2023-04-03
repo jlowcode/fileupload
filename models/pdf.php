@@ -173,7 +173,7 @@ class PdfRenderModel
         $displayData->filename = $filename;
         $displayData->thumb    = $this->getThumbnail($model, $params, $file);
         $displayData->inFormView    = $inFormView;
-        $displayData->simulate_context = (bool) $params->get('simulate_context');
+        $displayData->force_view = (bool) $params->get('force_view');
 
         //Data necessary to make thumb from 1st page work (JP)
         $displayData->make_pdf_thumb = (bool) $params->get('fu_make_pdf_thumb');
