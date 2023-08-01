@@ -92,6 +92,15 @@ class VideoRenderModel extends FabModel
 					$h += 64;
 			}
 		}
+		//Begin - Set the width of video display in details
+		$params = $model->getStorage()->getParams();
+		$maxWidth = $params->get('width_videos');
+		if($maxWidth < $w && $maxWidth) {
+			$factor = $h/$w;
+			$w = ceil($maxWidth);
+			$h = ceil($maxWidth*$factor);
+		}
+		//End - Set the width of video display in details
 
 		$displayData = new stdClass;
 		$displayData->width = $w;
