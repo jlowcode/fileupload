@@ -46,7 +46,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	 * @var bool
 	 */
 	protected $is_upload = true;
-
+	
 	/**
 	 * Does the element store its data in a join table (1:n)
 	 *
@@ -4192,7 +4192,26 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	 */
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
-		$value = parent::getValue($data, $repeatCounter, $opts);
+		/**
+		 * Begin - Toogle Submit in fileupload
+		 * Adding fileupload single to validation Toogle Submit
+		 * This way the value added in _orig element must be taken in validate function (components/com_fabrik/models/form.php)  
+		 * 
+		 * Id Task: 68
+		 */
+		if(is_array($this->HTMLids) && isset($this->HTMLids)) {
+			$HTMLid = $this->HTMLids[$repeatCounter];
+			$value = $data[$HTMLid . '_orig'];
+			if($this->isAjax()) {
+				$value = $data[$HTMLid];
+			}
+			if(!$value) {
+				$value = parent::getValue($data, $repeatCounter, $opts);
+			}
+		} else {
+			$value = parent::getValue($data, $repeatCounter, $opts);
+		}		
+		// Begin - Toogle Submit in fileupload
 
 		return $value;
 	}
@@ -4356,4 +4375,40 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 
 		return $filename;
 	}
+
+	/**
+	 * Does the element consider the data to be empty
+	 * Used during form submission, eg. for isEmpty validation rule
+	 *
+	 * Begin - Toogle Submit in fileupload
+	 * Adding fileupload single to validation Toogle Submit
+	 * This way the value added in _orig element must be taken in validate function (components/com_fabrik/models/form.php)  
+	 * 
+	 * Id Task: 68
+	 * 
+	 * @param   array  $data           data to test against
+	 * @param   int    $repeatCounter  repeat group #
+	 *
+	 * @return  bool
+	 */
+	public function dataConsideredEmptyForValidation($data, $repeatCounter)
+	{
+		$input  = $this->app->input;
+		$task = $input->get('task');
+
+		if($task != "form.ajax_validate") {
+			return $this->dataConsideredEmpty($data, $repeatCounter);
+		}
+
+		if($this->isAjax()) {
+			$imgs = json_decode($data);
+			if(is_null($imgs)) {
+				return $this->dataConsideredEmpty($data, $repeatCounter);
+			}
+			return empty($imgs) ? true : false;
+		}
+
+		return ($data == '') ? true : false;
+	}
+    //End - Toogle Submit in fileupload
 }
