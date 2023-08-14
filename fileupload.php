@@ -4193,13 +4193,22 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	public function getValue($data, $repeatCounter = 0, $opts = array())
 	{
 		/**
+		 * Begin - Toogle Submit - Error on submit files
+		 * 
+		 * Id Task: 90
+		 */
+		$input = JFactory::getApplication()->input;
+		$task = $input->get('task');
+		// End - Toogle Submit - Error on submit files
+
+		/**
 		 * Begin - Toogle Submit in fileupload
 		 * Adding fileupload single to validation Toogle Submit
 		 * This way the value added in _orig element must be taken in validate function (components/com_fabrik/models/form.php)  
 		 * 
 		 * Id Task: 68
 		 */
-		if(is_array($this->HTMLids) && isset($this->HTMLids)) {
+		if(is_array($this->HTMLids) && !empty($this->HTMLids) && strpos($task, 'ajax_validate')) {
 			$HTMLid = $this->HTMLids[$repeatCounter];
 			$value = $data[$HTMLid . '_orig'];
 			if($this->isAjax()) {
@@ -4211,7 +4220,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		} else {
 			$value = parent::getValue($data, $repeatCounter, $opts);
 		}		
-		// Begin - Toogle Submit in fileupload
+		// End - Toogle Submit in fileupload
 
 		return $value;
 	}
