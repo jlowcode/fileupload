@@ -24,6 +24,23 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                 this.ajaxFolder();
             }
 
+            /**
+             * Begin - Toogle Submit in fileupload
+             * Adding fileupload single to validation Toogle Submit
+             * This way the value added in _orig element must be taken in validate function (components/com_fabrik/models/form.php)  
+             * 
+             * Id Task: 68
+             */
+            jQuery('#'+element).on('change', function (t) {
+                fileName = jQuery(this).val().split('\\').pop();
+                if(fileName != '') {
+                    jQuery('#'+element+'_orig').val(fileName);
+                } else {
+                    jQuery('#'+element+'_orig').val('');
+                }
+            });
+            //End - Toogle Submit in fileupload
+
             function toObject(arr) {
                 var rv = {};
                 for (var i = 0; i < arr.length; ++i)
@@ -440,6 +457,9 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                 count = self.droplist.find(rElement).length;
                 jQuery.each(files, function (key, file) {
                     //files.each(function (file, idx) {
+                    //Begin - Toogle Submit in fileupload
+                    filesName = [];
+                    //End - Toogle Submit in fileupload
                     if (file.size > self.options.max_file_size * 1000) {
                         window.alert(Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_FILE_TOO_LARGE_SHORT'));
                     } else {
@@ -556,7 +576,28 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                                     });
                                 }
                             }
-
+                            
+                            /**
+                             * Begin - Toogle Submit in fileupload
+                             * Adding fileupload multi to validation Toogle Submit
+                             * This way the value added in element must be taken in validate function (components/com_fabrik/models/form.php)  
+                             * 
+                             * Id Task: 68
+                             */
+                            element = self.getElement();
+                            filesName.push(value);
+                            filesAddedStr = element.getAttribute('value');
+                            if(filesAddedStr == '' || filesAddedStr == undefined) {
+                                element.setAttribute('value', JSON.stringify(filesName));
+                            } else {
+                                try {
+                                    filesAdded = JSON.parse(filesAddedStr);
+                                    filesAdded.push(value);
+                                    element.setAttribute('value', JSON.stringify(filesAdded));
+                                } catch (error) {}
+                            }
+                            //End - Toogle Submit in fileupload
+                            
                             innerLi = self.imageCells(file, title, a, b, c, d, e, img_thumb);
 
                             self.droplist.append(jQuery(document.createElement(rElement)).attr({
@@ -588,6 +629,16 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     } else {
                         f.find('.plupload_file_status').text(file.percent + '%');
                     }
+
+                    /**
+                     * Begin - Toogle Submit in fileupload
+                     * Adding fileupload multi to validation Toogle Submit
+                     * This way the event will be trigger and the value must be taken in validate function (components/com_fabrik/models/form.php)  
+                     * 
+                     * Id Task: 68
+                     */
+                    jQuery('#'+element.id).trigger('change');
+                    //End - Toogle Submit in fileupload
                 }
             });
 
@@ -987,6 +1038,16 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                         .on('click', function (e) {
                             e.stopPropagation();
                             self.pluploadRemoveFile(e);
+
+                             /**
+                             * Begin - Toogle Submit in fileupload
+                             * Adding fileupload multi to validation Toogle Submit
+                             * This way the event will be trigger and the value must be taken in validate function (components/com_fabrik/models/form.php)  
+                             * 
+                             * Id Task: 68
+                             */
+                            jQuery('#'+element.id).trigger('change');
+                            //End - Toogle Submit in fileupload
                         })
                 );
 
@@ -1031,6 +1092,26 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
             var id = jQuery(e.target).closest('tr').prop('id').split('_').pop();// alreadyuploaded_8_13
             // $$$ hugh - removed ' span' from the find(), as this blows up on some templates
             var f = jQuery(e.target).closest('tr').find('.plupload_file_name').text();
+            
+            /**
+             * Begin - Toogle Submit in fileupload
+             * Adding fileupload multi to validation Toogle Submit
+             * This way the value added in element must be taken in validate function (components/com_fabrik/models/form.php)  
+             * 
+             * Id Task: 68
+             */
+            filesAddedStr = element.getAttribute('value');
+            if(filesAddedStr != '' && filesAddedStr != undefined) {
+                try {
+                    filesAdded = JSON.parse(filesAddedStr);
+                    pos = filesAdded.indexOf(f)
+                    if(pos != -1) {
+                        filesAdded.splice(pos, 1);
+                    }
+                    element.setAttribute('value', JSON.stringify(filesAdded));
+                } catch (error) {}
+            }
+            //End - Toogle Submit in fileupload
 
             // Get a list of all of the uploaders files except the one to be deleted
             var newFiles = [];
