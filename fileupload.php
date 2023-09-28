@@ -4211,16 +4211,20 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		if(is_array($this->HTMLids) && !empty($this->HTMLids) && strpos($task, 'ajax_validate')) {
 			$HTMLid = $this->HTMLids[$repeatCounter];
 			$value = $data[$HTMLid . '_orig'];
-			if($this->isAjax()) {
+			if($this->isAjax() || is_numeric(end(explode('_', $HTMLid)))) {
 				$value = $data[$HTMLid];
 			}
-			if(!$value) {
-				$value = parent::getValue($data, $repeatCounter, $opts);
+
+			if($repeatCounter !== 0) {
+				$name = $this->getFullName(true, false);
+				$value = $data[$name . '_' . $repeatCounter];
 			}
-		} else {
-			$value = parent::getValue($data, $repeatCounter, $opts);
-		}		
+		}
 		// End - Toogle Submit in fileupload
+
+		if(!$value) {
+			$value = parent::getValue($data, $repeatCounter, $opts);
+		}
 
 		return $value;
 	}
