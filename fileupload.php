@@ -4209,7 +4209,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		 * Id Task: 68
 		 */
 		if(is_array($this->HTMLids) && !empty($this->HTMLids) && strpos($task, 'ajax_validate')) {
-			$HTMLid = $this->HTMLids[$repeatCounter];
+			$HTMLid = $this->HTMLids[0];
 			$value = $data[$HTMLid . '_orig'];
 			$name = $this->getFullName(true, false);
 			if($this->isAjax() || is_numeric(end(explode('_', $HTMLid)))) {
