@@ -4204,23 +4204,27 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		/**
 		 * Begin - Toogle Submit in fileupload
 		 * Adding fileupload single to validation Toogle Submit
-		 * This way the value added in _orig element must be taken in validate function (components/com_fabrik/models/form.php)  
+		 * This way the value added in _orig element must be taken in validate function (components/com_fabrik/models/form.php)
 		 * 
 		 * Id Task: 68
 		 */
 		if(is_array($this->HTMLids) && !empty($this->HTMLids) && strpos($task, 'ajax_validate')) {
-			$HTMLid = $this->HTMLids[$repeatCounter];
+			$HTMLid = $this->HTMLids[0];
 			$value = $data[$HTMLid . '_orig'];
-			if($this->isAjax()) {
-				$value = $data[$HTMLid];
+			$name = $this->getFullName(true, false);
+			if($this->isAjax() || is_numeric(end(explode('_', $HTMLid)))) {
+				$data[$HTMLid] != '' ? $value = $data[$HTMLid] : $value = $data[$name.'_orig'][$repeatCounter]; // Id task: 174
 			}
-			if(!$value) {
-				$value = parent::getValue($data, $repeatCounter, $opts);
+
+			if($repeatCounter !== 0 && ($value == '' || !$value)) {
+				$value = $data[$name . '_' . $repeatCounter];
 			}
-		} else {
-			$value = parent::getValue($data, $repeatCounter, $opts);
-		}		
+		}
 		// End - Toogle Submit in fileupload
+
+		if(!$value || $value == '') {
+			$value = parent::getValue($data, $repeatCounter, $opts);
+		}
 
 		return $value;
 	}

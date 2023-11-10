@@ -228,6 +228,30 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                 var el = jQuery(this.element);
                 var i = el.closest('.fabrikElement').find('img');
                 i.attr('src', this.options.defaultImage !== '' ? Fabrik.liveSite + this.options.defaultImage : '');
+
+                /**
+                 * Begin - Toogle Submit in fileupload
+                 * Removing the file on edit form, the _orig element must be clean and the span element must be deleted
+                 * Plus, the validation must be actived
+                 * 
+                 * Id Task: 174
+                 */
+                elSpan = el[0].parentNode.getElementsByTagName('span');
+                if(elSpan !== null) {
+                    elSpan[0].remove();
+                }
+
+                elBr = el[0].parentNode.getElementsByTagName('br');
+                if(elBr !== null) {
+                    elBr[0].remove();
+                }
+
+                elHidden = el[0].parentNode.getElementsByClassName('hidden');
+                if(elHidden !== null) {
+                    elHidden[0].value = '';
+                }
+                jQuery('#'+this.element.id).trigger('change');
+                // Begin - Toogle Submit in fileupload
             }
         },
 
