@@ -4209,15 +4209,14 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		 * Id Task: 68
 		 */
 		if(is_array($this->HTMLids) && !empty($this->HTMLids) && strpos($task, 'ajax_validate')) {
-			$HTMLid = $this->HTMLids[0];
-			$value = $data[$HTMLid . '_orig'];
-			$name = $this->getFullName(true, false);
-			if($this->isAjax() || is_numeric(end(explode('_', $HTMLid)))) {
-				$data[$HTMLid] != '' ? $value = $data[$HTMLid] : $value = $data[$name.'_orig'][$repeatCounter]; // Id task: 174
-			}
-
-			if($repeatCounter !== 0 && ($value == '' || !$value)) {
+			$repetible = (bool) $this->getGroup()->getParams()->get('repeat_group_button');
+			if($repetible) {
+				$name = $this->getFullName(true, false);
 				$value = $data[$name . '_' . $repeatCounter];
+				$value == '' ? $value = $data[$name.'_orig'][$repeatCounter] : '';
+			} else {
+				$HTMLid = $this->HTMLids[0];
+				$value = $data[$HTMLid . '_orig'];		
 			}
 		}
 		// End - Toogle Submit in fileupload
