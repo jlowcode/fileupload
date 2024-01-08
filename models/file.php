@@ -57,6 +57,7 @@ class FileRenderModel
 	public function render(&$model, &$params, $file)
 	{
 		jimport('joomla.filesystem.file');
+		$filenameOrig = $file;
 
 		/*
 		 * $$$ hugh - TESTING - if $file is empty, we're going to just build an empty bit of DOM
@@ -98,6 +99,17 @@ class FileRenderModel
 			$displayData->filename = $filename;
 			$displayData->file = $file;
 
+			// Id task: 212
+			$listModel = $model->getListModel();
+			$formModel = $model->getFormModel();
+			$table = $listModel->getTable()->db_table_name . '_repeat_' . $model->element->name;
+			$rowId = $formModel->getRowId();
+			if ((bool) $params->get('ajax_upload')) {
+				$fieldType = $params->get('field_type');
+				$displayData->extraField = $this->getExtraField($filenameOrig, $table, $model->element->name, $rowId, $fieldType);
+				$displayData->fieldType = $fieldType;
+			}
+
 			$this->output = $layout->render($displayData);
 		}
 	}
@@ -122,4 +134,28 @@ class FileRenderModel
 		 */
 		return $rendered;
 	}
+
+	// Id task: 212
+	public function getExtraField($file, $table, $elementName, $rowId, $fieldType) 
+	{
+	    $db = JFactory::getDbo();
+	    $query = $db->getQuery(true);
+	    $query->select('params')->from($table)->where($elementName . ' = "' . $db->escape($file) . '" AND parent_id = ' . (int)$rowId);
+	    $db->setQuery($query);
+	    $result = $db->loadResult();
+
+	    $extraField = '';
+	    if ($result) {
+	        $result = json_decode($result);
+	        if ($result->extraField) {
+				if($fieldType == 1) {
+					$extraField = json_decode($result->extraField)->value;
+				} else if ($fieldType == 2) {
+					$extraField = json_decode($result->extraField)->label;
+				}
+            }
+        }
+
+	    return $extraField;
+    }
 }

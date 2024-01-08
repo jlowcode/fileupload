@@ -157,7 +157,10 @@ class ImageRenderModel
 			|| (!$this->inTableView && !$formModel->isEditable() && $params->get('fu_show_image', '0') == '3');
 
 		if ((bool) $params->get('ajax_upload')) {
-            $displayData->caption = $this->getCaption($fileNameToCaption, $table, $model->element->name, $rowId);
+            // Id task: 212
+            $fieldType = $params->get('field_type');
+			$displayData->extraField = $this->getExtraField($fileNameToCaption, $table, $model->element->name, $rowId, $fieldType);
+			$displayData->fieldType = $fieldType;
         }
 
 		$displayData->inFormView    = $inFormView;
@@ -312,7 +315,7 @@ class ImageRenderModel
 		return $layout->render($layoutData);
 	}
 
-	public function getCaption ($file, $table, $elementName, $rowId) {
+	public function getCaption($file, $table, $elementName, $rowId) {
 	    $db = JFactory::getDbo();
 	    $query = $db->getQuery(true);
 	    $query->select('params')->from($table)->where($elementName . ' = "' . $db->escape($file) . '" AND parent_id = ' . (int)$rowId);
@@ -328,5 +331,29 @@ class ImageRenderModel
         }
 
 	    return $caption;
+    }
+
+	// Id task: 212
+	public function getExtraField($file, $table, $elementName, $rowId, $fieldType) 
+	{
+	    $db = JFactory::getDbo();
+	    $query = $db->getQuery(true);
+	    $query->select('params')->from($table)->where($elementName . ' = "' . $db->escape($file) . '" AND parent_id = ' . (int)$rowId);
+	    $db->setQuery($query);
+	    $result = $db->loadResult();
+
+	    $extraField = '';
+	    if ($result) {
+	        $result = json_decode($result);
+	        if ($result->extraField) {
+				if($fieldType == 1) {
+					$extraField = json_decode($result->extraField)->value;
+				} else if ($fieldType == 2) {
+					$extraField = json_decode($result->extraField)->label;
+				}
+            }
+        }
+
+	    return $extraField;
     }
 }
