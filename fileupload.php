@@ -1174,53 +1174,55 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 				// Id task: 212
 				$fieldType = (int)$params->get('field_type');
 				$extraFieldRequiered = (bool)$params->get('extra_field_requiered');
-				if($fieldType !== 0 && $extraFieldRequiered == true && $input->get('task') == 'form.process') {
-					$formModel = $this->getFormModel();
-        			$rowId = $formModel->formData['rowid'];
-					$table = $this->getTableName();
-					$name = $this->getElement()->name;
+				if($input->get('task') == 'form.process' && !empty($data)) {
+					if($fieldType !== 0 && $extraFieldRequiered == true) {
+						$formModel = $this->getFormModel();
+						$rowId = $formModel->formData['rowid'];
+						$table = $this->getTableName();
+						$name = $this->getElement()->name;
 
-					$extraFieldValues = $data['extraField'];
-					$qtnFiles = count($data['id']);
-					$subLabels = $params->get('sub_options')->sub_labels;
-					$subValues = $params->get('sub_options')->sub_values;
+						$extraFieldValues = $data['extraField'];
+						$qtnFiles = count($data['id']);
+						$subLabels = $params->get('sub_options')->sub_labels;
+						$subValues = $params->get('sub_options')->sub_values;
 
-					for ($i=0; $i < $qtnFiles; $i++) {
-						if($extraFieldValues[$i] == '') {
-							$nok = true;
-							$params->get('extra_field_requiered_msg') ? $msg = $params->get('extra_field_requiered_msg') : $msg = JText::_("PLG_ELEMENT_FILEUPLOAD_EXTRA_FIELD_REQUIERED_MSG_DEFAULT");
-							$this->validationError = $msg;
-		
-							$file = array_keys($data['id'])[$i];
-							$query = $db->getQuery(true);
-							$query->select('id, params')->from($table . '_repeat_' . $name)->where('parent_id = ' . (int) $rowId . ' AND ' . $name . ' = "' . $db->escape($file) . '"');
-							$db->setQuery($query);
-							$result = $db->loadAssoc();
+						for ($i=0; $i < $qtnFiles; $i++) {
+							if($extraFieldValues[$i] == '') {
+								$nok = true;
+								$params->get('extra_field_requiered_msg') ? $msg = $params->get('extra_field_requiered_msg') : $msg = JText::_("PLG_ELEMENT_FILEUPLOAD_EXTRA_FIELD_REQUIERED_MSG_DEFAULT");
+								$this->validationError = $msg;
+			
+								$file = array_keys($data['id'])[$i];
+								$query = $db->getQuery(true);
+								$query->select('id, params')->from($table . '_repeat_' . $name)->where('parent_id = ' . (int) $rowId . ' AND ' . $name . ' = "' . $db->escape($file) . '"');
+								$db->setQuery($query);
+								$result = $db->loadAssoc();
 
-							if($result === null) {
-								continue;
+								if($result === null) {
+									continue;
+								}
+
+								$id = $result['id'];
+								$params_1 = $result['params'];
+
+								$obj = new stdClass();
+					
+								if ($params_1) {
+									$params_1 = json_decode($params_1);
+								}
+								$posValue = array_search($extraFieldValues[$i], $subValues);
+								$params_1->extraField = json_encode(Array("value" => "", "label" => $subLabels[$posValue]));
+
+								$params_1 = json_encode($params_1);
+								$obj->id = $id;
+								$obj->params = $params_1;
+								
+								$db->updateObject($table . '_repeat_' . $name, $obj, 'id');
 							}
-
-							$id = $result['id'];
-							$params_1 = $result['params'];
-
-							$obj = new stdClass();
-				
-							if ($params_1) {
-								$params_1 = json_decode($params_1);
-							}
-							$posValue = array_search($extraFieldValues[$i], $subValues);
-							$params_1->extraField = json_encode(Array("value" => "", "label" => $subLabels[$posValue]));
-
-							$params_1 = json_encode($params_1);
-							$obj->id = $id;
-							$obj->params = $params_1;
-							
-							$db->updateObject($table . '_repeat_' . $name, $obj, 'id');
 						}
-					}
 
-					if($nok) return false;
+						if($nok) return false;
+					}
 				}
 				// Id task: 212
 
