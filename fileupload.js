@@ -613,8 +613,8 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                                 subLabels = JSON.parse(self.options.subLabels);
                                 subValues = JSON.parse(self.options.subValues);
                                 subOptionDefault = self.options.subOptionDefault;
-                                idUpEl = self.options.fullName + '-extraField_' + key;
-                                nameUpEl = self.options.fullName + '-extraField[' + key + ']';
+                                idUpEl = self.options.fullName + '-extraField_' + (count-1);
+                                nameUpEl = self.options.fullName + '-extraField[' + (count-1) + ']';
 
                                 c = '<select requiered=true class="fabrikinput form-control inputbox input extra-field" name="' + nameUpEl + '" id="' + idUpEl + '"style="width: 100px">';
                                 for (let i = 0; i < subLabels.length; i++) {
