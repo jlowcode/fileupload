@@ -2,16 +2,26 @@
 defined('JPATH_BASE') or die;
 
 $d   = $displayData;
+// Id task: 212
+if($d->fieldType == 1) {
+    $d->extraField = '';
+} else if($d->fieldType == 2){
+    $d->caption = '';
+}
+// Id task: 212
+
 $ext = JFile::getExt($d->filename);
 ?>
     <?php
 
-    echo "<div style=\"vertical-align: middle;text-align: center;\">";
+    echo "<div style=\"vertical-align: middle;text-align: center; margin-bottom: 30px;\">";
 
     if (!$d->inFormView && !$d->force_view) {
         echo "<a href='{$d->url_details}'>";
     }
     else {
+        // Id task: 212
+        echo "<div>" . $d->extraField . "</div>";
         echo "<a class=\"download-archive fabrik-filetype-{$ext}\" title=\"{$d->caption}\"
 	href=\"{$d->file}\" target='_blank'>";
     }

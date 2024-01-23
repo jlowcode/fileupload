@@ -549,11 +549,13 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                                         "name": value,
                                         "class": self.options.elementShortName + "_thumb",
                                     });
-                                    c = "<input type='text' class='form-control fabrik-input text' style='height: 30px; width: 65%; margin-top: 30px; margin-left: -20px; position: absolute;'>";
+                                    /* Commented by Id task: 212
+                                    c = "<input type='text' class='form-control fabrik-input text' style='height: 30px; width: 65%; margin-top: 30px;   margin-left: -20px; position: absolute;'>";
+                                    */
                                 }
 
                                 if (self.options.rotate) {
-                                    d = "<label style='width: 20%; margin-top: 50px; margin-left: 0px; position: relative'>Girar:</label><select class='form-control' style='height: 30px; width: 35%; margin-top: -30px; margin-left: 40px; position: absolute'>" +
+                                    d = "<label style='margin-left: 0px; position: relative'>Girar:</label><select class='form-control' style='height: 30px; width: 35%; margin-top: -30px; margin-left: 40px; position: absolute'>" +
                                         "<option value='default'>Selecione</option>" +
                                         "<option value='left'>Esquerda</option>" +
                                         "<option value='right'>Direita</option>" +
@@ -593,14 +595,35 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                                             "class": self.options.elementShortName + "_thumb"
                                         });
                                     }
+                                    /*Commented by Id task: 212
                                     c = jQuery (document.createElement ('input')).attr ({
                                         "type": "text",
                                         "class": "form-control fabrik-input text",
                                         "style": "height: 30px; width: 55%; margin-top: 35px; margin-left: -10px; position: absolute;"
                                     });
+                                    */
                                 }
                             }
-                            
+
+                            // Id task: 212
+                            var fieldType = self.options.fieldType;
+                            if(fieldType == 1) {
+                                c = "<input type='text' class='form-control fabrik-input text' style='height: 30px; width: 65%; margin-top: 30px; margin-left: -20px; position: absolute;'>";
+                            } else if(fieldType == 2) {
+                                subLabels = JSON.parse(self.options.subLabels);
+                                subValues = JSON.parse(self.options.subValues);
+                                subOptionDefault = self.options.subOptionDefault;
+                                idUpEl = self.options.fullName + '-extraField_' + (count-1);
+                                nameUpEl = self.options.fullName + '-extraField[' + (count-1) + ']';
+
+                                c = '<select requiered=true class="fabrikinput form-control inputbox input extra-field" name="' + nameUpEl + '" id="' + idUpEl + '"style="width: 100px">';
+                                for (let i = 0; i < subLabels.length; i++) {
+                                    c += '<option value="' + subValues[i] + '">' + subLabels[i] + '</option>'
+                                }
+                                c += '</select>';
+                            }
+                            // Id task: 212
+
                             /**
                              * Begin - Toogle Submit in fileupload
                              * Adding fileupload multi to validation Toogle Submit
@@ -687,7 +710,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
             });
 
             this.uploader.bind('FileUploaded', function (up, file, response) {
-                var name, showWidget, f, resizeButton, idValue, principal, caption, thumb, rotate, ordenacao, valuePrincipal,
+                var name, showWidget, f, resizeButton, idValue, principal, caption, thumb, rotate, ordenacao, valuePrincipal, fieldType, subValues, subLabels, subOptionDefault
                     f = jQuery('#' + file.id)
                 response = JSON.parse(response.response);
                 if (response.error) {
@@ -738,14 +761,14 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
 
                 var aux_ext = valuePrincipal.split('.');
                 aux_ext = aux_ext[aux_ext.length-1];
-                caption = f.find('.plupload_resize input[type="text"]');
-                caption.show();
-                caption.attr({
-                    //name: 'caption_' + self.options.elementShortName + '_' + valuePrincipal.replace('.' + aux_ext, '')
-                    name: self.options.fullName + '_caption[]'
-                });
+                extraField = f.find('.plupload_resize .extra-field');
+                extraField.show();
+                /*extraField.attr({
+                    //name: 'extraField_' + self.options.elementShortName + '_' + valuePrincipal.replace('.' + aux_ext, '')
+                    name: self.options.fullName + '-extraField[]'
+                });*/
 
-                rotate = f.find('.plupload_resize select');
+                rotate = f.find('.plupload_resize select:not(.extra-field)');
                 rotate.show();
                 rotate.attr({
                     //name: 'rotate_' + self.options.elementShortName + '_' + valuePrincipal.replace('.' + aux_ext, '')
@@ -759,15 +782,21 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     name: self.options.fullName + '_order[]'
                 })
 
-                var existCaption, existsOrdenacao;
+                var existCaption, existsOrdenacao, existExtraField;
                 if (self.options.files) {
                     var i=0;
                     while (self.options.files[i]) {
                         if ((self.options.files[i].name === valuePrincipal) || (self.options.files[i].name === self.options.original_path_dir + valuePrincipal)) {
                             if (self.options.files[i].params) {
-                                if (self.options.files[i].params.caption) {
+                                // Id task: 212 
+                                /*if (self.options.files[i].params.caption) {
                                     existCaption = self.options.files[i].params.caption;
+                                }*/
+                                if(self.options.files[i].params.extraField) {
+                                    existExtraField = JSON.parse(self.options.files[i].params.extraField).value;
                                 }
+                                // Id task: 212
+
                                 if (self.options.files[i].params.ordenacao) {
                                     existsOrdenacao = self.options.files[i].params.ordenacao;
                                 }
@@ -777,7 +806,8 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     }
                 }
 
-                if (existCaption) {
+                // Id task: 212 
+                /*if (existCaption) {
                     caption.attr ({
                         value: existCaption
                     });
@@ -789,7 +819,25 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     caption.attr ({
                         value: value_caption
                     });
+                }*/
+
+                if(existExtraField) {
+                    extraField.attr({
+                        value: existExtraField
+                    })
+                } else {
+                    var value = file.name;
+                    if(self.options.fieldType == 1) {
+                        value = value.split('.');
+                        value = value[0];
+                    } else {
+                        value = self.options.subOptionDefault;
+                    }
+                    extraField.attr ({
+                        value: value
+                    });
                 }
+                // Id task: 212
 
                 if (existsOrdenacao) {
                     ordenacao.attr ({
@@ -875,7 +923,6 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                         }
                     }).done(function (r) {
                         r = JSON.parse(r);
-                        console.log(r);
                         /*if (r.error === '') {
                             Fabrik.trigger('fabrik.fileupload.delete.complete', self);
                             var li = jQuery(e.target).closest('.plupload_delete');
@@ -963,7 +1010,8 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                 if (this.options.replace_file_name) {
                     filename = jQuery (document.createElement ('td')).addClass (this.options.spanNames[6] + ' plupload_file_name').attr ("style", "display: none;").append (title);
                     //Add the caption field if option is selected (JP)
-                    if ((this.options.caption) && (c)) {
+                    //Add the new extra field - Id task: 212
+                    if ((this.options.fieldType != 0) && (c)) {
                         icon.append (c);
                     }
                     if ((this.options.rotate) && (d)) {

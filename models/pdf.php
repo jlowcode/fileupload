@@ -183,7 +183,10 @@ class PdfRenderModel
         $displayData->make_link = (bool) $params->get('make_link');
 
         if ($isAjax) {
-            $displayData->caption = $this->getCaption($fileNameToCaption, $table, $model->element->name, $rowId);
+            // Id task: 212
+            $fieldType = $params->get('field_type');
+            $displayData->extraField = $this->getExtraField($fileNameToCaption, $table, $model->element->name, $rowId, $fieldType);
+			$displayData->fieldType = $fieldType;
         }
 
         $displayData->path_thumb_dir = $params->get('thumb_dir');
@@ -248,5 +251,28 @@ class PdfRenderModel
         }
 
         return $caption;
+    }
+
+	// Id task: 212
+    public function getExtraField($file, $table, $elementName, $rowId, $fieldType) {
+	    $db = JFactory::getDbo();
+	    $query = $db->getQuery(true);
+	    $query->select('params')->from($table . '_repeat_' . $elementName)->where($elementName . ' = "' . $db->escape($file) . '" AND parent_id = ' . (int)$rowId);
+	    $db->setQuery($query);
+	    $result = $db->loadResult();
+
+	    $extraField = '';
+	    if ($result) {
+	        $result = json_decode($result);
+	        if ($result->extraField) {
+	            if($fieldType == 1) {
+					$extraField = json_decode($result->extraField)->value;
+				} else if ($fieldType == 2) {
+					$extraField = json_decode($result->extraField)->label;
+				}
+            }
+        }
+
+	    return $extraField;
     }
 }

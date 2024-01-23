@@ -110,27 +110,6 @@
 				<option value="1">JYES</option>
 			</field>
 
-			<!-- If 'yes' replace the file name with the image (JP) -->
-			<field name="upload_show_thumb"
-				   type="radio"
-				   default="0"
-				   class="btn-group"
-				   description="PLG_ELEMENT_FILEUPLOAD_REPLACE_FILE_NAME_DESC"
-				   label="PLG_ELEMENT_FILEUPLOAD_REPLACE_FILE_NAME_LABEL">
-				<option value="0">JNO</option>
-				<option value="1">JYES</option>
-			</field>
-
-			<field name="upload_caption"
-				   type="radio"
-				   default="0"
-				   class="btn-group"
-				   description="PLG_ELEMENT_FILEUPLOAD_CAPTION_DESC"
-				   label="PLG_ELEMENT_FILEUPLOAD_CAPTION_LABEL">
-				<option value="0">JNO</option>
-				<option value="1">JYES</option>
-			</field>
-
 			<field name="upload_ordenacao"
 				   type="radio"
 				   default="0"
@@ -748,6 +727,67 @@
 				<option value="raw">PLG_ELEMENT_FILEUPLOAD_RAW_FILE_STREAM</option>
 				<option value="base64">PLG_ELEMENT_FILEUPLOAD_BASE64_FILE_STREAM</option>
 			</field>
+		</fieldset>
+
+		<fieldset 
+			name="plg-fileupload-extras"
+			label="PLG_ELEMENT_FILEUPLOAD_EXTRAS">
+			<!-- Id task: 212 -->
+			
+			<!-- If 'yes' replace the file name with the image (JP) -->
+			<field name="upload_show_thumb"
+				   type="radio"
+				   default="0"
+				   class="btn-group"
+				   description="PLG_ELEMENT_FILEUPLOAD_REPLACE_FILE_NAME_DESC"
+				   label="PLG_ELEMENT_FILEUPLOAD_REPLACE_FILE_NAME_LABEL">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<!--
+			<field name="upload_caption"
+				   type="radio"
+				   default="0"
+				   class="btn-group"
+				   description="PLG_ELEMENT_FILEUPLOAD_CAPTION_DESC"
+				   label="PLG_ELEMENT_FILEUPLOAD_CAPTION_LABEL">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field> 
+			-->
+			
+			<field name="field_type"
+				   type="list"
+				   default="0"
+				   description="PLG_ELEMENT_FILEUPLOAD_FIELD_TYPE_DESC"
+				   label="PLG_ELEMENT_FILEUPLOAD_FIELD_TYPE_LABEL">
+				<option value="0">JNO</option>
+				<option value="1">PLG_ELEMENT_FILEUPLOAD_FIELD_TYPE_TEXT</option>
+				<option value="2">PLG_ELEMENT_FILEUPLOAD_FIELD_TYPE_DROPDOWN</option>
+			</field>
+
+			<field name="extra_field_requiered"
+				   type="radio"
+				   default="0"
+				   class="btn-group"
+				   description="PLG_ELEMENT_FILEUPLOAD_EXTRA_FIELD_REQUIERED_DESC"
+				   label="PLG_ELEMENT_FILEUPLOAD_EXTRA_FIELD_REQUIERED_LABEL">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field name="extra_field_requiered_msg"
+				   type="text"
+				   description="PLG_ELEMENT_FILEUPLOAD_EXTRA_FIELD_REQUIERED_MSG_DESC"
+				   label="PLG_ELEMENT_FILEUPLOAD_EXTRA_FIELD_REQUIERED_MSG_LABEL">
+			</field>
+
+			<field name="sub_options"
+				type="suboptions"
+				label="PLG_ELEMENT_FILEUPLOAD_OPTIONS_FIELD_LABEL"
+				description="PLG_ELEMENT_FILEUPLOAD_OPTIONS_FIELD_DESC"/>
+			<!-- Id task: 212 -->
 		</fieldset>
 	</fields>
 </form>

@@ -244,6 +244,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	 */
 	public function elementJavascript($repeatCounter)
 	{
+		$db 	= JFactory::getDbo();
 		$params = $this->getParams();
 		$id     = $this->getHTMLId($repeatCounter);
 		FabrikHelperHTML::mcl();
@@ -333,6 +334,15 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			$rawValues = $newRawValues;
 		}
 
+		// Id task: 212
+		$subLabels = $params->get('sub_options')->sub_labels;
+		$subValues = $params->get('sub_options')->sub_values;
+
+		$rowId = $formData['rowid'];
+		$table = $this->getTableName();
+		$name = $this->getElement()->name;
+		// Id task: 212
+
 		for ($x = 0; $x < count($value); $x++)
 		{
 			if (is_array($value))
@@ -362,7 +372,31 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 							$o->url            = $this->getStorage()->pathToURL($tKey);
 							$o->url            = $this->getStorage()->preRenderPath($o->url);
 							$o->recordid       = $rawValues[$x];
-							$o->params         = json_decode($value[$x]['crop'][$tKey]);
+							
+							// Id task: 212
+							//$o->params         = json_decode($value[$x]['crop'][$tKey]);
+							$fieldType = (int)$params->get('field_type');
+							$extraFieldRequiered = (bool)$params->get('extra_field_requiered');
+							if($fieldType !== 0 && $extraFieldRequiered == true) {
+								$params_1 = json_decode($value[$x]['crop'][$tKey]);
+								$file = $value[$x];
+
+								$query = $db->getQuery(true);
+								$query->select('id, params')->from($table . '_repeat_' . $name)->where('parent_id = ' . (int) $rowId . ' AND ' . $name . ' = "' . $db->escape($file) . '"');
+								$db->setQuery($query);
+								$result = $db->loadAssoc();
+
+								if($result !== null) {
+									$params_1->extraField = json_decode($result['params'])->extraField;
+									$o->params = $params_1;
+								} else {
+									$o->params = json_decode($value[$x]['crop'][$tKey]);
+								}
+							} else {
+								$o->params = json_decode($value[$x]['crop'][$tKey]);
+							}
+							// Id task: 212
+
 							$oFiles->$iCounter = $o;
 							$iCounter++;
 						}
@@ -391,7 +425,31 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 							$o->url            = $this->getStorage()->pathToURL($value[$x]);
 							$o->url            = $this->getStorage()->preRenderPath($o->url);
 							$o->recordid       = 0;
-							$o->params         = json_decode($imgParams[$x]);
+
+							// Id task: 212
+							//$o->params         = json_decode($imgParams[$x]);
+							$fieldType = (int)$params->get('field_type');
+							$extraFieldRequiered = (bool)$params->get('extra_field_requiered');
+							if($fieldType !== 0 && $extraFieldRequiered == true) {
+								$params_1 = json_decode($imgParams[$x]);
+								$file = $value[$x];
+
+								$query = $db->getQuery(true);
+								$query->select('id, params')->from($table . '_repeat_' . $name)->where('parent_id = ' . (int) $rowId . ' AND ' . $name . ' = "' . $db->escape($file) . '"');
+								$db->setQuery($query);
+								$result = $db->loadAssoc();
+
+								if($result !== null) {
+									$params_1->extraField = json_decode($result['params'])->extraField;
+									$o->params = $params_1;
+								} else {
+									$o->params = json_decode($imgParams[$x]);
+								}
+							} else {
+								$o->params = json_decode($imgParams[$x]);
+							}
+							// Id task: 212
+							
 							$oFiles->$iCounter = $o;
 							$iCounter++;
 						}
@@ -416,7 +474,31 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 							$o->url            = $this->getStorage()->pathToURL($value[$x]);
 							$o->url            = $this->getStorage()->preRenderPath($o->url);
 							$o->recordid       = $rawValues[$x];
-							$o->params         = json_decode(FArrayHelper::getValue($imgParams, $x, '{}'));
+							
+							// Id task: 212
+							//$o->params = json_decode(FArrayHelper::getValue($imgParams, $x, '{}'));
+							$fieldType = (int)$params->get('field_type');
+							$extraFieldRequiered = (bool)$params->get('extra_field_requiered');
+							if($fieldType !== 0 && $extraFieldRequiered == true) {
+								$params_1 = json_decode(FArrayHelper::getValue($imgParams, $x, '{}'));
+								$file = $value[$x];
+
+								$query = $db->getQuery(true);
+								$query->select('id, params')->from($table . '_repeat_' . $name)->where('parent_id = ' . (int) $rowId . ' AND ' . $name . ' = "' . $db->escape($file) . '"');
+								$db->setQuery($query);
+								$result = $db->loadAssoc();
+
+								if($result !== null) {
+									$params_1->extraField = json_decode($result['params'])->extraField;
+									$o->params = $params_1;
+								} else {
+									$o->params = json_decode(FArrayHelper::getValue($imgParams, $x, '{}'));
+								}
+							} else {
+								$o->params = json_decode(FArrayHelper::getValue($imgParams, $x, '{}'));
+							}
+							// Id task: 212
+
 							$oFiles->$iCounter = $o;
 							$iCounter++;
 						}
@@ -488,7 +570,14 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
         $opts->height_thumb = $params->get('thumb_max_height');
         $opts->path = $params->get('thumb_dir');
 
-        $opts->caption = (bool) $params->get('upload_caption');
+		// Id task: 212
+        //$opts->caption = (bool) $params->get('upload_caption');
+        $opts->fieldType = (int) $params->get('field_type');
+        $opts->subValues = json_encode($params->get('sub_options')->sub_values);
+        $opts->subLabels = json_encode($params->get('sub_options')->sub_labels);
+        $opts->subOptionDefault = $params->get('sub_options')->sub_initial_selection[0];
+		// Id task: 212
+
         $opts->rotate = (bool) $params->get('upload_rotate_image');
         $opts->ordenacao = (bool) $params->get('upload_ordenacao');
 
@@ -1064,6 +1153,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	 */
 	public function validate($data = array(), $repeatCounter = 0)
 	{
+		$db = JFactory::getDbo();
 		$input                 = $this->app->input;
 		$params                = $this->getParams();
 		$this->validationError = '';
@@ -1081,6 +1171,61 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
             }
             else
             {
+				// Id task: 212
+				$fieldType = (int)$params->get('field_type');
+				$extraFieldRequiered = (bool)$params->get('extra_field_requiered');
+				if($input->get('task') == 'form.process' && !empty($data)) {
+					if($fieldType !== 0 && $extraFieldRequiered == true) {
+						$formModel = $this->getFormModel();
+						$rowId = $formModel->formData['rowid'];
+						$table = $this->getTableName();
+						$name = $this->getElement()->name;
+
+						$extraFieldValues = $data['extraField'];
+						$qtnFiles = count($data['id']);
+						$subLabels = $params->get('sub_options')->sub_labels;
+						$subValues = $params->get('sub_options')->sub_values;
+
+						for ($i=0; $i < $qtnFiles; $i++) {
+							if($extraFieldValues[$i] == '') {
+								$nok = true;
+								$params->get('extra_field_requiered_msg') ? $msg = $params->get('extra_field_requiered_msg') : $msg = JText::_("PLG_ELEMENT_FILEUPLOAD_EXTRA_FIELD_REQUIERED_MSG_DEFAULT");
+								$this->validationError = $msg;
+			
+								$file = array_keys($data['id'])[$i];
+								$query = $db->getQuery(true);
+								$query->select('id, params')->from($table . '_repeat_' . $name)->where('parent_id = ' . (int) $rowId . ' AND ' . $name . ' = "' . $db->escape($file) . '"');
+								$db->setQuery($query);
+								$result = $db->loadAssoc();
+
+								if($result === null) {
+									continue;
+								}
+
+								$id = $result['id'];
+								$params_1 = $result['params'];
+
+								$obj = new stdClass();
+					
+								if ($params_1) {
+									$params_1 = json_decode($params_1);
+								}
+								$posValue = array_search($extraFieldValues[$i], $subValues);
+								$params_1->extraField = json_encode(Array("value" => "", "label" => $subLabels[$posValue]));
+
+								$params_1 = json_encode($params_1);
+								$obj->id = $id;
+								$obj->params = $params_1;
+								
+								$db->updateObject($table . '_repeat_' . $name, $obj, 'id');
+							}
+						}
+
+						if($nok) return false;
+					}
+				}
+				// Id task: 212
+
                 // if no 'file', this is part of form submission, we've already validated during AJAX upload
                 return true;
             }
@@ -1924,9 +2069,17 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
         if (!(bool) $params->get('upload_show_thumb')) {
             return;
         }
+		// Id task: 212
+        //$shouldCaption = (bool) $params->get('upload_caption');
+        //$captions = $input->getString($this->getFullName() . '_caption');
+        $extraField = $params->get('field_type');
+        $extraFieldValues = $input->getString($this->getFullName() . '-extraField');
+		$subValues = $params->get('sub_options')->sub_values;
+        $subLabels = $params->get('sub_options')->sub_labels;
+		// Id task: 212
+
         $thumb_dir_path = $params->get('thumb_dir');
         $shouldSort = (bool) $params->get('upload_ordenacao');
-        $shouldCaption = (bool) $params->get('upload_caption');
         $db = JFactory::getDbo();
 
         $table = $this->getTableName();
@@ -1941,7 +2094,6 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
         }
 
         $orders = $input->get($this->getFullName() . '_order');
-        $captions = $input->getString($this->getFullName() . '_caption');
         $rotates = $input->getString($this->getFullName() . '_rotate');
 
         $i = count($files)-1;
@@ -1990,21 +2142,30 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
             $result = $db->loadAssoc();
             $id = $result['id'];
             $params_1 = $result['params'];
+            $obj = new stdClass();
+
             if ($params_1) {
                 $params_1 = json_decode($params_1);
-            }
-
-            if ($shouldCaption) {
-                $params_1->caption = $captions[$i];
             }
 
             if ($shouldSort) {
                 $params_1->ordenacao = $orders[$i];
             }
+
+			// Id task: 212 
+            /*if ($shouldCaption) {
+                $params_1->caption = $captions[$i];
+            }*/
+			if($extraField != 0) {
+				$posValue = array_search($extraFieldValues[$i], $subValues);
+				$params_1->extraField = json_encode(Array("value" => $extraFieldValues[$i], "label" => $subLabels[$posValue]));
+			}
+			// Id task: 212
+			
             $params_1 = json_encode($params_1);
-            $obj = new stdClass();
             $obj->id = $id;
             $obj->params = $params_1;
+
             $insert = $db->updateObject($table . '_repeat_' . $name, $obj, 'id');
 
             $i--;
@@ -4225,6 +4386,14 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		if(!$value || $value == '') {
 			$value = parent::getValue($data, $repeatCounter, $opts);
 		}
+
+		//Id task: 212
+	    $params = $this->getParams();
+		$fieldType = (int) $params->get('field_type');
+		if(!empty($value) && $fieldType != 0) {
+			$value['extraField'] = $data[$this->getFullName() . '-extraField'];
+		}
+		//Id task: 212
 
 		return $value;
 	}
