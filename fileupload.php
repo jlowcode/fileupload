@@ -4390,7 +4390,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		//Id task: 212
 	    $params = $this->getParams();
 		$fieldType = (int) $params->get('field_type');
-		if(!empty($value) && $fieldType != 0) {
+		if(!empty($value) && $fieldType != 0 && !isset($value['extraField'])) {
 			$value['extraField'] = $data[$this->getFullName() . '-extraField'];
 		}
 		//Id task: 212
