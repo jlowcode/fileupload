@@ -329,7 +329,8 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			$newRawValues = array();
 			foreach ($value as $k => $v)
 			{
-				$newRawValues[$k] = $rawValues['id'][$v];
+				//$newRawValues[$k] = $rawValues['id'][$v];
+				$newRawValues[$k] = MD5($v);
 			}
 			$rawValues = $newRawValues;
 		}
