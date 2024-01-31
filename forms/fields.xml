@@ -732,7 +732,7 @@
 		<fieldset 
 			name="plg-fileupload-extras"
 			label="PLG_ELEMENT_FILEUPLOAD_EXTRAS">
-			<!-- Id task: 212 -->
+			<!-- BEGIN - Id task: 212 -->
 			
 			<!-- If 'yes' replace the file name with the image (JP) -->
 			<field name="upload_show_thumb"
@@ -783,11 +783,17 @@
 				   label="PLG_ELEMENT_FILEUPLOAD_EXTRA_FIELD_REQUIERED_MSG_LABEL">
 			</field>
 
+			<field name="extra_field_label"
+				   type="text"
+				   description="PLG_ELEMENT_FILEUPLOAD_EXTRA_FIELD_LABEL_DESC"
+				   label="PLG_ELEMENT_FILEUPLOAD_EXTRA_FIELD_LABEL_LABEL">
+			</field>
+
 			<field name="sub_options"
 				type="suboptions"
 				label="PLG_ELEMENT_FILEUPLOAD_OPTIONS_FIELD_LABEL"
 				description="PLG_ELEMENT_FILEUPLOAD_OPTIONS_FIELD_DESC"/>
-			<!-- Id task: 212 -->
+			<!-- END - Id task: 212 -->
 		</fieldset>
 	</fields>
 </form>
