@@ -3,13 +3,13 @@ defined('JPATH_BASE') or die;
 
 $d      = $displayData;
 
-// Id task: 212
+// Begin - Id task: 212
 if($d->fieldType == 1) {
     $d->extraField = '';
 } else if($d->fieldType == 2){
     $d->caption = '';
 }
-// Id task: 212
+// End - Id task: 212
 
 $var = microtime();
 $height = empty($d->height) ? '' : ' height="' . $d->height . 'px" ';
@@ -49,9 +49,9 @@ else :
         else :
             if (($d->view === 'details' || $d->force_view) && ($d->makeLink)) :
                 ?>
-                <!-- Id task: 212 -->
+                <!-- Begin - Id task: 212 -->
                 <div><?php echo $d->extraField ?></div>
-                <!-- Id task: 212 -->
+                <!-- End - Id task: 212 -->
 
                 <a href="<?php echo $d->fullSize; ?>" title="<?php if (($d->caption) && ($d->inFormView)) echo $d->caption; else echo $d->title; ?>" <?php if ($d->inFormView) echo "data-lightbox={$d->elementName} "; echo $d->lightboxAttrs; ?>>
                 <?php echo $img;?>
@@ -105,10 +105,3 @@ endif;
 
 </script>
 <?php }?>
-
-
-
-
-
-
-

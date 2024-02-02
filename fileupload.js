@@ -605,24 +605,30 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                                 }
                             }
 
-                            // Id task: 212
+                            // Begin - Id task: 212
                             var fieldType = self.options.fieldType;
+                            idUpEl = self.options.fullName + '-extraField_' + (count-1);
+                            label = self.options.extra_field_label;
+                            c = '';
+                            if(fieldType != 0 && label != '') {
+                                c = '<label style="margin-bottom: 0px; margin-top: 10px;" for=' + idUpEl + '>' + label + '</label>';
+                            }
+
                             if(fieldType == 1) {
-                                c = "<input type='text' class='form-control fabrik-input text' style='height: 30px; width: 65%; margin-top: 30px; margin-left: -20px; position: absolute;'>";
+                                c += "<input type='text' class='form-control fabrik-input text' style='height: 30px; width: 65%; margin-top: 30px; margin-left: -20px; position: absolute;'>";
                             } else if(fieldType == 2) {
                                 subLabels = JSON.parse(self.options.subLabels);
                                 subValues = JSON.parse(self.options.subValues);
                                 subOptionDefault = self.options.subOptionDefault;
-                                idUpEl = self.options.fullName + '-extraField_' + (count-1);
                                 nameUpEl = self.options.fullName + '-extraField[' + (count-1) + ']';
 
-                                c = '<select requiered=true class="fabrikinput form-control inputbox input extra-field" name="' + nameUpEl + '" id="' + idUpEl + '"style="width: 100px">';
+                                c += '<select requiered=true class="fabrikinput form-control inputbox input extra-field" name="' + nameUpEl + '" id="' + idUpEl + '"style="width: 100px">';
                                 for (let i = 0; i < subLabels.length; i++) {
                                     c += '<option value="' + subValues[i] + '">' + subLabels[i] + '</option>'
                                 }
                                 c += '</select>';
                             }
-                            // Id task: 212
+                            // End - Id task: 212
 
                             /**
                              * Begin - Toogle Submit in fileupload
@@ -788,14 +794,14 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     while (self.options.files[i]) {
                         if ((self.options.files[i].name === valuePrincipal) || (self.options.files[i].name === self.options.original_path_dir + valuePrincipal)) {
                             if (self.options.files[i].params) {
-                                // Id task: 212 
+                                // Begin - Id task: 212
                                 /*if (self.options.files[i].params.caption) {
                                     existCaption = self.options.files[i].params.caption;
                                 }*/
                                 if(self.options.files[i].params.extraField) {
                                     existExtraField = JSON.parse(self.options.files[i].params.extraField).value;
                                 }
-                                // Id task: 212
+                                // End - Id task: 212
 
                                 if (self.options.files[i].params.ordenacao) {
                                     existsOrdenacao = self.options.files[i].params.ordenacao;
@@ -806,7 +812,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     }
                 }
 
-                // Id task: 212 
+                // Begin - Id task: 212 
                 /*if (existCaption) {
                     caption.attr ({
                         value: existCaption
@@ -825,6 +831,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     extraField.attr({
                         value: existExtraField
                     })
+                    valueExtra = existExtraField;
                 } else {
                     var value = file.name;
                     if(self.options.fieldType == 1) {
@@ -836,8 +843,9 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     extraField.attr ({
                         value: value
                     });
+                    valueExtra = value;
                 }
-                // Id task: 212
+                // End - Id task: 212
 
                 if (existsOrdenacao) {
                     ordenacao.attr ({
@@ -860,6 +868,17 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     }
                     self.widget.setImage(response.uri, response.filepath, file.params, showWidget);
                 }
+                // Begin - Id task: 212
+                // Stores the extra field
+                jQuery(document.createElement('input')).attr({
+                    'type'      : 'hidden',
+                    name        : name + '[extra-field][' + response.filepath + ']',
+                    'id'        : 'coords_' + file.id,
+                    'idextra'  : extraField[0].id,
+                    'value'     : valueExtra
+                }).insertAfter(self.pluploadContainer);
+                // End - Id task: 212
+
                 // Stores the cropparams which we need to reload the crop widget in the correct state (rotation, zoom, etc)
                 jQuery(document.createElement('input')).attr({
                     'type' : 'hidden',
@@ -1013,6 +1032,11 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     //Add the new extra field - Id task: 212
                     if ((this.options.fieldType != 0) && (c)) {
                         icon.append (c);
+                        jQuery(icon).children('[name*="extraField"]').on('change', function() {
+                            value = jQuery(this).val();
+                            idextra = this.id;
+                            select = jQuery('[idextra="' + idextra + '"]').val(value);
+                        });
                     }
                     if ((this.options.rotate) && (d)) {
                         icon.append (d);
