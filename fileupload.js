@@ -1055,6 +1055,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                 }
                 //Create the column to insert img thumb (JP)
                 if (img_thumb) {
+                    img_thumb = jQuery(title).text('').append(img_thumb);
                     thumb = jQuery(document.createElement('td')).addClass(this.options.spanNames[6] + ' plupload_thumb').append(img_thumb);
                 }
 
