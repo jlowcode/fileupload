@@ -873,8 +873,8 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                 jQuery(document.createElement('input')).attr({
                     'type'      : 'hidden',
                     name        : name + '[extra-field][' + response.filepath + ']',
-                    'id'        : 'coords_' + file.id,
-                    'idextra'  : extraField[0].id,
+                    'id'        : 'extra_' + file.id,
+                    'idextra'   : extraField[0].id,
                     'value'     : valueExtra
                 }).insertAfter(self.pluploadContainer);
                 // End - Id task: 212
@@ -1055,6 +1055,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                 }
                 //Create the column to insert img thumb (JP)
                 if (img_thumb) {
+                    img_thumb = jQuery(title).text('').append(img_thumb);
                     thumb = jQuery(document.createElement('td')).addClass(this.options.spanNames[6] + ' plupload_thumb').append(img_thumb);
                 }
 
@@ -1250,6 +1251,8 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     // Remove hidden fields as well
                     jQuery('#id_alreadyuploaded_' + self.options.id + '_' + id).remove();
                     jQuery('#coords_alreadyuploaded_' + self.options.id + '_' + id).remove();
+                    jQuery('#data_alreadyuploaded_' + self.options.id + '_' + id).remove();
+                    jQuery('#extra_alreadyuploaded_' + self.options.id + '_' + id).remove();
 
                     if (jQuery(self.getContainer()).find('table tbody tr.plupload_delete').length === 0) {
                         self.addDropArea();
