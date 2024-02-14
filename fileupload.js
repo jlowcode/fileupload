@@ -1091,7 +1091,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
             var self = this;
             if (Fabrik.bootstrapped) {
                 return jQuery(document.createElement('a')).addClass('editImage').attr({
-                    'href': '#',
+                    'href': window.location.href + '#',      //Id task: 289
                     alt   : Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_RESIZE')
                 }).css({
                     'display': 'none'
@@ -1103,7 +1103,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
 
             } else {
                 return new Element('a', {
-                    'href': '#',
+                    'href': window.location.href + '#',      //Id task: 289
                     alt   : Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_RESIZE'),
                     events: {
                         'click': function (e) {
@@ -1130,7 +1130,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     jQuery(document.createElement('a'))
                         .html(icon)
                         .attr({
-                            'href' : '#'
+                            'href' : window.location.href + '#'     //Id task: 289
                         })
                         .on('click', function (e) {
                             e.stopPropagation();
@@ -1152,7 +1152,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                 return new Element('div', {
                     'class': 'plupload_file_action'
                 }).adopt(new Element('a', {
-                    'href' : '#',
+                    'href' : window.location.href + '#',     //Id task: 289
                     'style': 'display:block',
                     events : {
                         'click': function (e) {
