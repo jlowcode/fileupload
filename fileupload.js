@@ -607,7 +607,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
 
                             // Begin - Id task: 212
                             var fieldType = self.options.fieldType;
-                            idUpEl = self.options.fullName + '-extraField_' + (count-1);
+                            idUpEl = self.options.fullName + '-extraField_' + file.id;
                             label = self.options.extra_field_label;
                             c = '';
                             if(fieldType != 0 && label != '') {
@@ -620,7 +620,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                                 subLabels = JSON.parse(self.options.subLabels);
                                 subValues = JSON.parse(self.options.subValues);
                                 subOptionDefault = self.options.subOptionDefault;
-                                nameUpEl = self.options.fullName + '-extraField[' + (count-1) + ']';
+                                nameUpEl = self.options.fullName + '-extraField[' + file.id + ']';
 
                                 c += '<select requiered=true class="fabrikinput form-control inputbox input extra-field" name="' + nameUpEl + '" id="' + idUpEl + '"style="width: 100px">';
                                 for (let i = 0; i < subLabels.length; i++) {
@@ -1089,9 +1089,10 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
          */
         editImgButton: function () {
             var self = this;
-            if (Fabrik.bootstrapped) {
+            var linkHref = window.location.href.indexOf('#') > -1 ? window.location.href : window.location.href + '#';  //Id task: 289
+            if (Fabrik.bootstrapped) {    
                 return jQuery(document.createElement('a')).addClass('editImage').attr({
-                    'href': window.location.href + '#',      //Id task: 289
+                    'href': linkHref,      //Id task: 289
                     alt   : Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_RESIZE')
                 }).css({
                     'display': 'none'
@@ -1103,7 +1104,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
 
             } else {
                 return new Element('a', {
-                    'href': window.location.href + '#',      //Id task: 289
+                    'href': linkHref,      //Id task: 289
                     alt   : Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_RESIZE'),
                     events: {
                         'click': function (e) {
@@ -1126,11 +1127,12 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
 
                 var icon = Fabrik.jLayouts['fabrik-icon-delete'],
                     self = this;
+                var linkHref = window.location.href.indexOf('#') > -1 ? window.location.href : window.location.href + '#';
                 return jQuery(document.createElement('td')).addClass(this.options.spanNames[1] + ' plupload_file_action').append(
                     jQuery(document.createElement('a'))
                         .html(icon)
                         .attr({
-                            'href' : window.location.href + '#'     //Id task: 289
+                            'href' : linkHref     //Id task: 289
                         })
                         .on('click', function (e) {
                             e.stopPropagation();
@@ -1152,7 +1154,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                 return new Element('div', {
                     'class': 'plupload_file_action'
                 }).adopt(new Element('a', {
-                    'href' : window.location.href + '#',     //Id task: 289
+                    'href' : linkHref,     //Id task: 289
                     'style': 'display:block',
                     events : {
                         'click': function (e) {
@@ -1253,6 +1255,12 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     jQuery('#coords_alreadyuploaded_' + self.options.id + '_' + id).remove();
                     jQuery('#data_alreadyuploaded_' + self.options.id + '_' + id).remove();
                     jQuery('#extra_alreadyuploaded_' + self.options.id + '_' + id).remove();
+
+                    // Remove hidden fields not uploaded as well - Id task: 290
+                    jQuery('#id_' + id).remove();
+                    jQuery('#coords_' + id).remove();
+                    jQuery('#data_' + id).remove();
+                    jQuery('#extra_' + id).remove();
 
                     if (jQuery(self.getContainer()).find('table tbody tr.plupload_delete').length === 0) {
                         self.addDropArea();
