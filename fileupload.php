@@ -1178,8 +1178,6 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 				$extraFieldRequiered = (bool)$params->get('extra_field_requiered');
 				if($input->get('task') == 'form.process' && !empty($data)) {
 					if($fieldType !== 0 && $extraFieldRequiered == true) {
-						$formModel = $this->getFormModel();
-						$rowId = $formModel->formData['rowid'];
 						$table = $this->getTableName();
 						$name = $this->getElement()->name;
 
@@ -2073,7 +2071,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
         //$shouldCaption = (bool) $params->get('upload_caption');
         //$captions = $input->getString($this->getFullName() . '_caption');
         $extraField = $params->get('field_type');
-        $extraFieldValues = $input->getString($this->getFullName() . '-extraField');
+        $extraFieldValues = array_values($input->getString($this->getFullName() . '-extraField'));
 		$subValues = $params->get('sub_options')->sub_values;
         $subLabels = $params->get('sub_options')->sub_labels;
 		// End - Id task: 212
@@ -4360,6 +4358,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		 */
 		$input = JFactory::getApplication()->input;
 		$task = $input->get('task');
+		$value = '';
 		// End - Toogle Submit - Error on submit files
 
 		/**
