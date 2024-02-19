@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 use Fabrik\Helpers\Image;
 use Fabrik\Helpers\Uploader;
 use Joomla\Utilities\ArrayHelper;
+use Joomla\CMS\Filesystem\Folder;
 
 define("FU_DOWNLOAD_SCRIPT_NONE", '0');
 define("FU_DOWNLOAD_SCRIPT_TABLE", '1');
@@ -1957,7 +1958,13 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
     }
 
     public function createPdfThumb ($path_pdf, $path_thumb) {
-        if ((!JFile::exists($path_pdf)) || (JFile::exists($path_thumb))) {
+		// Begin - Id task: 284
+		if (!file_exists(\dirname($path_thumb))) {
+			Folder::create(\dirname($path_thumb));
+		}
+		// End - Id task: 284
+
+		if ((!JFile::exists($path_pdf)) || (JFile::exists($path_thumb))) {
             return false;
         }
 
@@ -2284,10 +2291,15 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
         $filename = str_replace('.' . $ext, '.png', $filename);
         $path_thumb = JPATH_BASE . '/' . $input->getString('path') . '/' . $filename;
 
+		// Begin - Id task: 284
+		if (!file_exists(\dirname($path_thumb))) {
+			Folder::create(\dirname($path_thumb));
+		}
+		// End - Id task: 284
+
         if (($ext !== 'pdf') || (!JFile::exists($path)) || (JFile::exists($path_thumb))) {
 	        echo json_encode('');
-        }
-        else {
+        } else {
             $im = new Imagick($path . '[0]');
             $im->setImageFormat("png");
             $im->setImageBackgroundColor(new ImagickPixel('white'));
