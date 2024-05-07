@@ -4,12 +4,16 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2020  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\Folder;
+use Joomla\String\StringHelper;
 
 /**
  * Abstract Storage adaptor for Fabrik file upload element
@@ -113,7 +117,7 @@ abstract class FabrikStorageAdaptor
 	 *
 	 * @return  bool  returns false if error
 	 */
-	public abstract function stream($filepath, $chunkSize = 1024 * 1024);
+	public abstract function stream($filepath, $chunkSize = 1048576);
 
 	/**
 	 * Clean the file path
@@ -215,9 +219,9 @@ abstract class FabrikStorageAdaptor
 	 */
 	public function makeRecursiveFolders($folderPath, $mode = 0755)
 	{
-		if (!JFolder::exists($folderPath))
+		if (!Folder::exists($folderPath))
 		{
-			if (!JFolder::create($folderPath, $mode))
+			if (!Folder::create($folderPath, $mode))
 			{
 				throw new RuntimeException("Could not make dir $folderPath ", 21);
 			}
@@ -304,12 +308,12 @@ abstract class FabrikStorageAdaptor
 
 			while ($i < $length)
 			{
-				$char = JString::substr($possible, mt_rand(0, JString::strlen($possible) - 1), 1);
+				$char = StringHelper::substr($possible, mt_rand(0, StringHelper::strlen($possible) - 1), 1);
 				$key .= $char;
 				$i++;
 			}
 
-			$ext = JFile::getExt($filename);
+			$ext = File::getExt($filename);
 			$filename = $key . '.' . $ext;
 		}
 	}

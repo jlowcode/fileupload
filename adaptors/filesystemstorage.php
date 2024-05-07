@@ -4,12 +4,18 @@
  *
  * @package     Joomla
  * @subpackage  Fabrik
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2020  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\Path;
+use Joomla\CMS\Filesystem\Folder;
+use Joomla\String\StringHelper;
 
 require_once JPATH_ROOT . '/plugins/fabrik_element/fileupload/adaptor.php';
 
@@ -39,7 +45,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 			return false;
 		}
 
-		if (JFile::exists($filepath))
+		if (File::exists($filepath))
 		{
 		    return true;
 		}
@@ -48,7 +54,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 		{
 			$filepath = COM_FABRIK_BASE . '/' . FabrikString::ltrimword($filepath, COM_FABRIK_BASE . '/');
 
-			return JFile::exists($filepath);
+			return File::exists($filepath);
 		}
 
 		return false;
@@ -64,7 +70,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 
 	public function folderExists($path)
 	{
-		return JFolder::exists($path);
+		return Folder::exists($path);
 	}
 
 	/**
@@ -87,9 +93,9 @@ class Filesystemstorage extends FabrikStorageAdaptor
 
 		if (!$this->exists($index_file))
 		{
-			$content = FText::_('PLG_ELEMENT_FILEUPLOAD_INDEX_FILE_CONTENT');
+			$content = Text::_('PLG_ELEMENT_FILEUPLOAD_INDEX_FILE_CONTENT');
 
-			return JFile::write($index_file, $content);
+			return File::write($index_file, $content);
 		}
 
 		return true;
@@ -106,7 +112,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 
 	public function createFolder($path, $mode = 0755)
 	{
-		if (JFolder::create($path, $mode))
+		if (Folder::create($path, $mode))
 		{
 			return $this->createIndexFile($path);
 		}
@@ -144,7 +150,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 
 			if ($this->makeRecursiveFolders($parent, $mode) !== true)
 			{
-				// JFolder::create throws an error
+				// Folder::create throws an error
 				$nested--;
 
 				return false;
@@ -154,7 +160,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 			$nested--;
 		}
 
-		if (JFolder::exists($folderPath))
+		if (Folder::exists($folderPath))
 		{
 			return true;
 		}
@@ -172,7 +178,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 
 	public function clean($path)
 	{
-		return JPath::clean($path);
+		return Path::clean($path);
 	}
 
 	/**
@@ -210,9 +216,9 @@ class Filesystemstorage extends FabrikStorageAdaptor
 
 	public function delete($filepath, $prependRoot = true)
 	{
-		if (JFile::exists($filepath))
+		if (File::exists($filepath))
 		{
-			return JFile::delete($filepath);
+			return File::delete($filepath);
 		}
 		else
 		{
@@ -220,7 +226,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 			{
 				$filepath = COM_FABRIK_BASE . '/' . FabrikString::ltrimword($filepath, COM_FABRIK_BASE . '/');
 
-				return JFile::delete($filepath);
+				return File::delete($filepath);
 			}
 
 			return false;
@@ -242,8 +248,22 @@ class Filesystemstorage extends FabrikStorageAdaptor
 
 		$params = $this->getParams();
 		$allowUnsafe = $params->get('allow_unsafe', '0') === '1';
+		$uploaded = false;
 
-		if (JFile::upload($tmpFile, $filepath, false, $allowUnsafe))
+		/**
+		 * If we're AJAX uploading and WiP is set, then we already "uploaded" it direct from the form through AJAX
+		 * to our own tmp location, now we're just moving it - we can't run File::upload(), as that will fail
+		 * (it's not an "uploaded file" at this point)
+		 */
+		if ($params->get('ajax_upload', '0') === '1' && $params->get('upload_use_wip', '0') === '1')
+		{
+			$uploaded = File::move($tmpFile, $filepath);
+		}
+		else {
+			$uploaded = File::upload($tmpFile, $filepath, false, $allowUnsafe);
+		}
+
+		if ($uploaded)
 		{
 			return $this->createIndexFile(dirname($filepath));
 		}
@@ -261,7 +281,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 
 	public function setPermissions($filepath)
 	{
-		return JPath::setPermissions($filepath);
+		return Path::setPermissions($filepath);
 	}
 
 	/**
@@ -275,7 +295,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 
 	public function write($file, $buffer)
 	{
-		return JFile::write($file, $buffer);
+		return File::write($file, $buffer);
 	}
 
 	/**
@@ -300,7 +320,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	 * @return  bool
 	 */
 
-	public function stream($filepath, $chunkSize = 1024 * 1024)
+	public function stream($filepath, $chunkSize = 1048576)
 	{
 		$buffer = '';
 		$handle = fopen($filepath, 'rb');
@@ -335,7 +355,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	{
 		$livesite = COM_FABRIK_LIVESITE;
 		$livesite = rtrim($livesite, '/\\');
-		$file = JString::ltrim($file, '/\\');
+		$file = StringHelper::ltrim($file, '/\\');
 
 		return str_replace("\\", "/", $livesite . '/' . $file);
 	}
@@ -368,7 +388,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 		$w = new FabrikWorker;
 
 		// $$$ rob wasn't working when getting thumb path on upload
-		$ulDir = JPath::clean($params->get('ul_directory'));
+		$ulDir = Path::clean($params->get('ul_directory'));
 		$ulDir = str_replace("\\", "/", $ulDir);
 
 		// If we're deleting a file, See http://fabrikar.com/forums/showthread.php?t=31715
@@ -376,9 +396,9 @@ class Filesystemstorage extends FabrikStorageAdaptor
 
 		// Replace things like $my->id may barf on other stuff
 		$afile = str_replace(JURI::root(), '', $file);
-		$afile = JString::ltrim($afile, "/");
-		$ulDir = JString::ltrim($ulDir, "/");
-		$ulDir = JString::rtrim($ulDir, "/");
+		$afile = StringHelper::ltrim($afile, "/");
+		$ulDir = StringHelper::ltrim($ulDir, "/");
+		$ulDir = StringHelper::rtrim($ulDir, "/");
 		$ulDirbits = explode('/', $ulDir);
 		$filebits = explode('/', $afile);
 
@@ -401,11 +421,11 @@ class Filesystemstorage extends FabrikStorageAdaptor
 		$thumbdir = str_replace($match, $replace, $typeDir);
 		$ulDir = $w->parseMessageForPlaceHolder($ulDir);
 		$thumbdir = $w->parseMessageForPlaceHolder($thumbdir);
-		$file = str_replace($ulDir, $thumbdir, $file);
 		$file = $w->parseMessageForPlaceHolder($file);
 		$f = basename($file);
 		$dir = dirname($file);
-		$ext = JFile::getExt($f);
+		$dir = str_replace($ulDir, ltrim($thumbdir, '/'), $dir);
+		$ext = File::getExt($f);
 
 		// Remove extension
 		$fclean = str_replace('.' . $ext, '', $f);
@@ -520,7 +540,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 			$filepath = COM_FABRIK_BASE . '/' . $filepath;
 		}
 
-		$filepath = JPath::clean($filepath);
+		$filepath = Path::clean($filepath);
 
 		return $filepath;
 	}
@@ -536,7 +556,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 	{
 		if ($this->appendServerPath())
 		{
-			JPath::check($folder);
+			Path::check($folder);
 		}
 	}
 

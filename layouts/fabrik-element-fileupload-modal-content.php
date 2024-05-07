@@ -1,6 +1,8 @@
 <?php
 defined('JPATH_BASE') or die;
 
+use Joomla\CMS\Language\Text;
+
 $d = $displayData;
 
 ?>
@@ -10,24 +12,24 @@ $d = $displayData;
 
 	<?php if ($d->canCrop) : ?>
 		<div class="row-fluid" style="margin-top:20px">
-			<div class="zoom span6">
-				<?php echo FText::_('PLG_ELEMENT_FILEUPLOAD_ZOOM'); ?>:
+			<div class="zoom col-sm-6">
+				<?php echo Text::_('PLG_ELEMENT_FILEUPLOAD_ZOOM'); ?>:
 				<div class="fabrikslider-line" style="width: 100px;float:left;">
 					<div class="knob"></div>
 				</div><br />
-				<input type="number" name="zoom-val" value="" size="3" class="input-mini">
+				<input type="number" name="zoom-val" value="" size="3" class="col-sm-2">
 			</div>
-			<div class="rotate span5"><?php echo FText::_('PLG_ELEMENT_FILEUPLOAD_ROTATE'); ?>:
+			<div class="rotate col-sm-5"><?php echo Text::_('PLG_ELEMENT_FILEUPLOAD_ROTATE'); ?>:
 				<div class="fabrikslider-line" style="width: 100px;float:left;">
 					<div class="knob"></div>
 				</div><br />
-				<input type="number" name="rotate-val" value="" size="3" class="input-mini">
+				<input type="number" name="rotate-val" value="" size="3" class="col-sm-2">
 			</div>
 		</div>
 	<?php endif; ?>
 	<?php if ($d->canvasSupport) : ?>
 		<div >
-			<input type="button" class="button btn btn-primary" name="close-crop" value="<?php echo FText::_('PLG_ELEMENT_FILEUPLOAD_CLOSE'); ?>">
+			<input type="button" class="button btn btn-primary" name="close-crop" value="<?php echo Text::_('PLG_ELEMENT_FILEUPLOAD_CLOSE'); ?>">
 		</div>
 	<?php endif; ?>
 </div>

@@ -4,12 +4,14 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.fileupload
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2020  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\CMS\Language\Text;
 
 /**
  * Fileupload adaptor to render uploaded videos
@@ -57,7 +59,7 @@ class VideoRenderModel extends FabModel
 
 		if ($getID3 === false)
 		{
-			$this->output = FText::_('COM_FABRIK_LIBRARY_NOT_INSTALLED');
+			$this->output = Text::_('COM_FABRIK_LIBRARY_NOT_INSTALLED');
 
 			return;
 		}
@@ -92,15 +94,6 @@ class VideoRenderModel extends FabModel
 					$h += 64;
 			}
 		}
-		//Begin - Set the width of video display in details
-		$params = $model->getStorage()->getParams();
-		$maxWidth = $params->get('width_videos');
-		if($maxWidth < $w && $maxWidth) {
-			$factor = $h/$w;
-			$w = ceil($maxWidth);
-			$h = ceil($maxWidth*$factor);
-		}
-		//End - Set the width of video display in details
 
 		$displayData = new stdClass;
 		$displayData->width = $w;
@@ -128,11 +121,11 @@ class VideoRenderModel extends FabModel
 	 * @param   object  $model    Element model
 	 * @param   object  $params   Element params
 	 * @param   object  $thisRow  All rows data
+	 * @param   bool    $nav      Render a navbar on carousel
 	 *
 	 * @return  string  HTML
 	 */
-
-	public function renderCarousel($id = 'carousel', $data = array(), $model = null, $params = null, $thisRow = null)
+	public function renderCarousel($id = 'carousel', $data = array(), $model = null, $params = null, $thisRow = null, $nav = true)
 	{
 		$rendered = '';
 		$id .= '_video_carousel';
