@@ -3732,7 +3732,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 
 		if ($hit_counter = $params->get('fu_download_hit_counter', ''))
 		{
-			JError::setErrorHandling(E_ALL, 'ignore');
+			//JError::setErrorHandling(E_ALL, 'ignore');
 			$listModel = $this->getListModel();
 			$pk        = $listModel->getPrimaryKey();
 			$fabrikDb  = $listModel->getDb();
