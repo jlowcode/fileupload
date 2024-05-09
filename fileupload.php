@@ -1829,15 +1829,16 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			                   'error' => $_FILES[$name]['error'],
 			                   'size' => $_FILES[$name]['size']);
 
-			if ($file['name'] != '')
-			{
-				$files = $this->_processIndUpload($file, $myFileDir);
-			}
-			else
-			{
-				// No new file uploaded - keep the original one.
-				$files = FArrayHelper::getValue($filesToKeep, 0, '');
-			}
+							   if (!$_FILES[$name]['workflow'] == 1) {
+								if ($file['name'] != '') {
+									$files = $this->_processIndUpload($file, $myFileDir);
+								} else {
+									// No new file uploaded - keep the original one.
+									$files = FArrayHelper::getValue($filesToKeep, 0, '');
+								}
+							} else {
+								$files = $myFileDir;
+							}
 
 			// We are in a single upload element - should not re-add in previous images. So don't use filesToKeep
 			// see http://fabrikar.com/forums/index.php?threads/fileupload-in-repeated-group.41100/page-2
