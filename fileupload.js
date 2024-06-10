@@ -673,35 +673,35 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
          * @return {jQuery}
          */
         deleteImgButton: function () {
-            if (Fabrik.bootstrapped) {
+            // if (Fabrik.bootstrapped) {
 
-                var icon = Fabrik.jLayouts['fabrik-icon-delete'],
-                    self = this;
-                return jQuery(document.createElement('td')).addClass(this.options.spanNames[1] + ' plupload_file_action').append(
-                    jQuery(document.createElement('a'))
-                        .html(icon)
-                        .attr({
-                            'href' : '#'
-                        })
-                        .on('click', function (e) {
-                            e.stopPropagation();
-                            self.pluploadRemoveFile(e);
-                        })
-                );
+            //     var icon = Fabrik.jLayouts['fabrik-icon-delete'],
+            //         self = this;
+            //     return jQuery(document.createElement('td')).addClass(this.options.spanNames[1] + ' plupload_file_action').append(
+            //         jQuery(document.createElement('a'))
+            //             .html(icon)
+            //             .attr({
+            //                 'href' : '#'
+            //             })
+            //             .on('click', function (e) {
+            //                 e.stopPropagation();
+            //                 self.pluploadRemoveFile(e);
+            //             })
+            //     );
 
-            } else {
-                return new Element('div', {
-                    'class': 'plupload_file_action'
-                }).adopt(new Element('a', {
-                    'href' : '#',
-                    'style': 'display:block',
-                    events : {
-                        'click': function (e) {
-                            this.pluploadRemoveFile(e);
-                        }.bind(this)
-                    }
-                }));
-            }
+            // } else {
+            //     return new Element('div', {
+            //         'class': 'plupload_file_action'
+            //     }).adopt(new Element('a', {
+            //         'href' : '#',
+            //         'style': 'display:block',
+            //         events : {
+            //             'click': function (e) {
+            //                 this.pluploadRemoveFile(e);
+            //             }.bind(this)
+            //         }
+            //     }));
+            // }
         },
 
         /**

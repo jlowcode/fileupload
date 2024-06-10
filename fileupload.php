@@ -1256,6 +1256,13 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$params = $this->getParams();
 		$groupModel = $this->getGroup();
 		$formModel  = $this->getFormModel();
+		
+		$workflow = $formModel->listModel->table->db_table_name . '_FILE_' . $name;
+
+		if ($formModel->formData[$workflow]) {
+			$workflow = 1;
+			return true;
+		}
 
 		if ($params->get('upload_use_wip', '0') === '1' && $this->isAjax())
 		{
@@ -1764,6 +1771,12 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$formModel  = $this->getFormModel();
 		$name       = $this->getFullName(true, false);
 		$myFileDirs = $input->get($name, array(), 'array');
+		$workflow = $formModel->listModel->table->db_table_name . '_FILE_' . $name;
+
+		if ($formModel->formData[$workflow]) {
+			$workflow = 1;
+			return;
+		}
 
 		if (!$this->shouldDoNonAjaxUpload())
 		{
@@ -2780,8 +2793,10 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	protected function deleteButton($value, $repeatCounter)
 	{
 		$joinedGroupPkVal = $this->getJoinedGroupPkVal($repeatCounter);
-
-		return '<button class="btn button" data-file="' . $value . '" data-join-pk-val="' . $joinedGroupPkVal . '">' . Text::_('COM_FABRIK_DELETE') . '</button> ';
+		if ($_REQUEST["workflow_can_delete_upload"]) {
+			return '<button class="btn button" data-file="' . $value . '" data-join-pk-val="' . $joinedGroupPkVal . '">' . Text::_('COM_FABRIK_DELETE') . '</button> ';
+		}
+		return '';
 	}
 
 	/**
