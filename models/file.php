@@ -4,12 +4,15 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.fileupload
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2020  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\CMS\Filesystem\File;
+use Joomla\String\StringHelper;
 
 /**
  * Plugin element to render fileuploads of file type
@@ -57,7 +60,6 @@ class FileRenderModel
 	public function render(&$model, &$params, $file)
 	{
 		jimport('joomla.filesystem.file');
-		$filenameOrig = $file;
 
 		/*
 		 * $$$ hugh - TESTING - if $file is empty, we're going to just build an empty bit of DOM
@@ -76,14 +78,14 @@ class FileRenderModel
 		{
 			$filename = basename($file);
 			$filename = strip_tags($filename);
-			$ext = JFile::getExt($filename);
+			$ext = File::getExt($filename);
 
 			if (!strstr($file, 'http://') && !strstr($file, 'https://'))
 			{
 				// $$$rob only add in livesite if we don't already have a full url (e.g. from amazons3)
 
 				// Trim / or \ off the start of $file
-				$file = JString::ltrim($file, '/\\');
+				$file = StringHelper::ltrim($file, '/\\');
 				$file = COM_FABRIK_LIVESITE . $file;
 			}
 
@@ -93,22 +95,12 @@ class FileRenderModel
 
 			$layout = $model->getLayout('file');
 			$displayData = new stdClass;
-			$displayData->thumb =  COM_FABRIK_LIVESITE . 'media/com_fabrik/images/' . $ext . '.png';
-			$displayData->useThumb = $params->get('make_thumbnail', false) && JFile::exists($displayData->thumb);
+			$ext_icon = 'media/com_fabrik/images/' . $ext . '.png';
+			$displayData->thumb =  COM_FABRIK_LIVESITE . $ext_icon;
+			$displayData->useThumb = $params->get('make_thumbnail', false) && File::exists(COM_FABRIK_BASE . $ext_icon);
 			$displayData->ext = $ext;
 			$displayData->filename = $filename;
 			$displayData->file = $file;
-
-			// Id task: 212
-			$listModel = $model->getListModel();
-			$formModel = $model->getFormModel();
-			$table = $listModel->getTable()->db_table_name . '_repeat_' . $model->element->name;
-			$rowId = $formModel->getRowId();
-			if ((bool) $params->get('ajax_upload')) {
-				$fieldType = $params->get('field_type');
-				$displayData->extraField = $this->getExtraField($filenameOrig, $table, $model->element->name, $rowId, $fieldType);
-				$displayData->fieldType = $fieldType;
-			}
 
 			$this->output = $layout->render($displayData);
 		}
@@ -122,11 +114,11 @@ class FileRenderModel
 	 * @param   object  $model    Element model
 	 * @param   object  $params   Element params
 	 * @param   object  $thisRow  All rows data
+	 * @param   bool    $nav      Render a navbar on carousel
 	 *
 	 * @return  string  HTML
 	 */
-
-	public function renderCarousel($id = 'carousel', $data = array(), $model = null, $params = null, $thisRow = null)
+	public function renderCarousel($id = 'carousel', $data = array(), $model = null, $params = null, $thisRow = null, $nav = true)
 	{
 		$rendered = '';
 		/**
@@ -134,28 +126,4 @@ class FileRenderModel
 		 */
 		return $rendered;
 	}
-
-	// Id task: 212
-	public function getExtraField($file, $table, $elementName, $rowId, $fieldType) 
-	{
-	    $db = JFactory::getDbo();
-	    $query = $db->getQuery(true);
-	    $query->select('params')->from($table)->where($elementName . ' = "' . $db->escape($file) . '" AND parent_id = ' . (int)$rowId);
-	    $db->setQuery($query);
-	    $result = $db->loadResult();
-
-	    $extraField = '';
-	    if ($result) {
-	        $result = json_decode($result);
-	        if ($result->extraField) {
-				if($fieldType == 1) {
-					$extraField = json_decode($result->extraField)->value;
-				} else if ($fieldType == 2) {
-					$extraField = json_decode($result->extraField)->label;
-				}
-            }
-        }
-
-	    return $extraField;
-    }
 }

@@ -4,12 +4,16 @@
  *
  * @package     Joomla.Plugin
  * @subpackage  Fabrik.element.fileupload
- * @copyright   Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @copyright   Copyright (C) 2005-2020  Media A-Team, Inc. - All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Filesystem\File;
 
 /**
  * Fileupload - Plugin element to render Flash files
@@ -57,12 +61,12 @@ class FlashRenderModel extends FabModel
 
 		if ($getID3 === false)
 		{
-			$this->output = FText::_('COM_FABRIK_LIBRARY_NOT_INSTALLED');
+			$this->output = Text::_('COM_FABRIK_LIBRARY_NOT_INSTALLED');
 
 			return;
 		}
 
-		$fbConfig = JComponentHelper::getParams('com_fabrik');
+		$fbConfig = ComponentHelper::getParams('com_fabrik');
 
 		// Analyse file and store returned data in $ThisFileInfo
 		$relPath = str_replace("\\", "/", JPATH_SITE . $file);
@@ -113,7 +117,7 @@ class FlashRenderModel extends FabModel
 
 				$thumb_path = COM_FABRIK_BASE . $thumb_dir . '/' . $pathinfo['filename'] . '.png';
 
-				if (JFile::exists($thumb_path))
+				if (File::exists($thumb_path))
 				{
 					$thumb_file = COM_FABRIK_LIVESITE . $thumb_dir . '/' . $pathinfo['filename'] . '.png';
 				}
@@ -143,10 +147,11 @@ class FlashRenderModel extends FabModel
 	 * @param   object  $model    Element model
 	 * @param   object  $params   Element params
 	 * @param   object  $thisRow  All rows data
+	 * @param   bool    $nav      Render a navbar on carousel
 	 *
 	 * @return  string  HTML
 	 */
-	public function renderCarousel($id = 'carousel', $data = array(), $model = null, $params = null, $thisRow = null)
+	public function renderCarousel($id = 'carousel', $data = array(), $model = null, $params = null, $thisRow = null, $nav = true)
 	{
 		$rendered = '';
 		/**
