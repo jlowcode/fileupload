@@ -767,6 +767,11 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     // Remove hidden fields as well
                     jQuery('#id_alreadyuploaded_' + self.options.id + '_' + id).remove();
                     jQuery('#coords_alreadyuploaded_' + self.options.id + '_' + id).remove();
+                    jQuery('#data_alreadyuploaded_' + self.options.id + '_' + id).remove();
+
+                    jQuery('#id_' + id).remove();
+                    jQuery('#coords_' + id).remove();
+                    jQuery('#data_' + id).remove();
 
                     if (jQuery(self.getContainer()).find('table tbody tr.plupload_delete').length === 0) {
                         self.addDropArea();
