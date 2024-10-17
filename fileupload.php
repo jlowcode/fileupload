@@ -2110,7 +2110,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		}
 		else
 		{
-			if ($input->get('task') == '')
+			if ($input->get('task') == '' || $input->get('wfl_action') == 'list_requests')
 			{
 				return parent::dataConsideredEmpty($data, $repeatCounter);
 			}
