@@ -27,6 +27,7 @@ use Fabrik\Helpers\Html;
 use Joomla\CMS\Filesystem\File;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Php;
+use Joomla\CMS\Factory;
 
 if (!defined('FU_DOWNLOAD_SCRIPT_NONE')) define("FU_DOWNLOAD_SCRIPT_NONE", '0');
 if (!defined('FU_DOWNLOAD_SCRIPT_TABLE')) define("FU_DOWNLOAD_SCRIPT_TABLE", '1');
@@ -488,6 +489,29 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$opts->isZoom           = $params->get('fu_show_image') === '3' && !$this->isEditable();;
 		$opts->htmlId           = $id;
 
+		//Check if the option Principal is selected (JP)
+        $opts->principal = ($params->get('fu_show_image_in_table') === '3') ? true : false;
+        //If option 'principal' is selected, get the main_image (JP)
+        if (($opts->principal) && ($formData["__pk_val"])) {
+            $opts->main_image = $this->getPrincipal($this->getTableName(), $formData["__pk_val"], Factory::getConfig()->get("db"));
+        }
+        //Check if have to delete image (JP)
+        $opts->canDelete = $params->get("upload_delete_image");
+        //Check if the option to show image on update is selected (JP)
+        $opts->replace_file_name = (bool)$params->get("upload_show_thumb");
+
+        $opts->make_pdf_thumb = (bool) $params->get('fu_make_pdf_thumb');
+        $opts->width_thumb = $params->get('thumb_max_width');
+        $opts->height_thumb = $params->get('thumb_max_height');
+        $opts->path = $params->get('thumb_dir');
+
+        $opts->caption = (bool) $params->get('upload_caption');
+        $opts->rotate = (bool) $params->get('upload_rotate_image');
+        $opts->ordenacao = (bool) $params->get('upload_ordenacao');
+
+        $opts->original_path_dir = $params->get('ul_directory');
+
+        $opts->show_preview = (bool) $params->get('upload_show_preview');
 		for($i = 1; $i <= 12; $i++)
 		{
 			$opts->spanNames[$i] = Html::getGridSpan($i);
@@ -592,6 +616,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$data     = FabrikWorker::JSONtoData($data, true);
 		$name     = $this->getFullName(true, false); // used for debugging, please leave
 		$params   = $this->getParams();
+		$element  = $this->element;
 		$rendered = '';
 		static $id_num = 0;
 
@@ -615,10 +640,36 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			}
 			else
 			{
-				for ($i = 0; $i < count($data); $i++)
-				{
-					$data[$i] = $this->_renderListData($data[$i], $thisRow, $i);
-				}
+				//Render images in list if option 'principal' is selected (JP)
+			    if ($params->get('fu_show_image_in_table') === '3') {
+                    $main_image = (array)$this->getPrincipal($this->getListModel()->getTable()->db_table_name, $thisRow->__pk_val, Factory::getConfig()->get("db"));
+
+                    //If exists main_image, render only the main_image (JP)
+                    if ($main_image) {
+                        $data_return = array();
+                        for ($i = 0; $i < count($data); $i++) {
+                            $data[$i] = str_replace("\\", "/", $data[$i]);
+                            $name_element = end(explode("/", $data[$i]));
+                            if ($main_image[$element->name]->name === $name_element) {
+                                $data_return[] = $data[$i];
+                            }
+                        }
+                        $data = $data_return;
+                        $data[0] = $this->_renderListData($data_return, $thisRow, 0);
+                    }
+                    //If doesn't exist, render only the first image (JP)
+                    else {
+                        $data_return = array();
+                        $data_return[] = $data[0];
+                        $data = $data_return;
+                        $data[0] = $this->_renderListData($data_return, $thisRow, 0);
+                    }
+                }
+			    else {
+                    for ($i = 0; $i < count($data); $i++) {
+                        $data[$i] = $this->_renderListData($data[$i], $thisRow, $i);
+                    }
+                }
 			}
 		}
 
@@ -999,7 +1050,11 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		if ($render->output == '' && $params->get('default_image') != '')
 		{
 			$defaultURL     = $storage->getFileUrl(str_replace(COM_FABRIK_BASE, '', $params->get('default_image')));
-			$render->output = '<img class="fabrikDefaultImage" src="' . $defaultURL . '" alt="image" />';
+			$input = $this->app->input;
+			$formModel = $this->getFormModel();
+			$listModel = $formModel->getListModel();
+			$url_detais = COM_FABRIK_LIVESITE . "index.php?option=com_fabrik&view=details&Itemid={$input->get('Itemid')}&formid={$formModel->getId()}&rowid={$thisRow->__pk_val}&listid={$listModel->getId()}";
+			$render->output = '<a href="' . $url_detais . '"><img class="fabrikDefaultImage" src="' . $defaultURL . '" alt="image" /></a>';
 		}
 		else
 		{
@@ -1756,8 +1811,372 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			return false;
 		}
 
+
 		return true;
 	}
+
+	/*
+     * Get the name and directory of the images selected as principal  (JP)
+     *
+     * @return json object
+     */
+	public function updatePrincipal() {
+	    $input = $this->app->input;
+        $params = $this->getParams();
+        $formModel = $this->getFormModel();
+        $table = $this->getTableName();
+	    $elementName = $this->element->name;
+        $url = str_replace("\\","/", JPATH_BASE);
+
+	    $principal = $input->getString("p_{$elementName}");
+
+        if (!$principal) {
+            return false;
+        }
+
+	    $obj = new stdClass();
+	    $obj->name = $principal;
+
+        if ((bool)$params->get('fileupload_crop')) {
+            $obj->dir = $url . "/" . $params->get('fileupload_crop_dir') . "/" . $obj->name;
+        } else if ((bool)$params->get('make_thumbnail')) {
+            $obj->dir = $url . "/" . $params->get('thumb_dir') . "/" . $obj->name;
+        } else {
+            $obj->dir = $url . "/" . $params->get('ul_directory') . "/" . $obj->name;
+        }
+
+        $rowId = $formModel->formData['rowid'];
+        $db = Factory::getContainer()->get('DatabaseDriver');
+        $query = $db->getQuery(true);
+        $query->select('id, main_image')->from($table)->where('id = ' . (int) $rowId);
+        $db->setQuery($query);
+        $result = $db->loadObject();
+
+        $main_image = (Object) json_decode($result->main_image);
+        $main_image->$elementName = $obj;
+
+        $result->main_image = json_encode($main_image);
+
+        return $db->updateObject($table, $result, 'id');
+    }
+
+    /*
+     * Add column 'main_image' on database if doesn't exist (JP)
+     * Necessary to use the option 'principal'
+     *
+     * @param string $table Table's name
+     *
+     * @return void
+     */
+    public function addColumnPrincipal() {
+        $table = $this->getTableName();
+
+        $db = Factory::getContainer()->get('DatabaseDriver');
+        $db->setQuery("
+	        ALTER TABLE " . $table .
+            " ADD COLUMN IF NOT EXISTS" .
+            " main_image text"
+        );
+        try {
+            $db->execute();
+        } catch (RuntimeException $e) {
+            $err = new stdClass;
+            $err->error = $e->getMessage();
+            echo json_encode($err);
+            exit;
+        }
+    }
+
+    /*
+     * Get the main_image stored on database (JP)
+     *
+     * @param string $table Table's name
+     * @param $rowId Actual row's id
+     * @param string $db_name Database name to check if the column main_image exist
+     *
+     * @return Object
+     */
+    public function getPrincipal($table, $rowId, $db_name) {
+	    $db = Factory::getContainer()->get('DatabaseDriver');
+        $query = "SELECT * FROM information_schema.COLUMNS where COLUMN_NAME = 'main_image' AND TABLE_NAME = '" . $table . "' AND TABLE_SCHEMA = '" . $db_name . "'";
+        $db->setQuery($query);
+        $db->execute();
+        $column_exists = $db->loadResult();
+
+        if ($column_exists) {
+            $query = $db->getQuery(true);
+            $query->select("main_image")->from($table)->where("id = " . $rowId);
+            $db->setQuery($query);
+            $result = $db->loadResult();
+        }
+
+	    return json_decode($result);
+    }
+
+    public function rotateImageGD($path_source, $path_target, $ang) {
+        if (!File::exists($path_source)) {
+            return false;
+        }
+
+        $file_info = pathinfo($path_source);
+        switch (strtolower($file_info['extension'])) {
+            case 'jpg':
+            case 'jpeg':
+                $source = imagecreatefromjpeg($path_source);
+                $rotated = imagerotate($source, $ang, 0);
+                imagejpeg($rotated, $path_target);
+                break;
+            case 'png':
+                $source = imagecreatefrompng($path_source);
+                $rotated = imagerotate($source, $ang, 0);
+                imagepng($rotated, $path_target);
+                break;
+            case 'gif':
+                $source = imagecreatefromgif($path_source);
+                $rotated = imagerotate($source, $ang, 0);
+                imagegif($rotated, $path_target);
+                break;
+            default:
+                $source = false;
+                break;
+        }
+
+        if (!$source) {
+            return false;
+        }
+
+        imagedestroy($source);
+        imagedestroy($rotated);
+
+        return true;
+    }
+
+    public function rotateImageImagick ($path_source, $path_target, $ang) {
+        if (!File::exists($path_source)) {
+            return false;
+        }
+
+        $params = $this->getParams();
+
+        $background = $params->get('upload_rotate_background', 0);
+        if ($background !== 0) {
+            list($red, $green, $blue) = sscanf($background, "#%02x%02x%02x");
+            if ((isset($red)) && (isset($green)) && (isset($blue))) {
+                $color = "rgb($red,$green,$blue)";
+            }
+            else {
+                $color = "white";
+            }
+        }
+
+        $tr = new Imagick($path_source);
+        if (!$tr->rotateImage(new ImagickPixel($color), $ang)) {
+            return false;
+        }
+        if (!$tr->writeImage($path_target)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function createPdfThumb ($path_pdf, $path_thumb) {
+        if ((!File::exists($path_pdf)) || (File::exists($path_thumb))) {
+            return false;
+        }
+
+        $params = $this->getParams();
+        $width_thumb = $params->get('thumb_max_width');
+        $height_thumb = $params->get('thumb_max_height');
+
+        $im = new Imagick($path_pdf . '[0]');
+        $im->setImageFormat("png");
+        $im->setImageBackgroundColor(new ImagickPixel('white'));
+        $im->thumbnailImage($width_thumb, $height_thumb);
+        if (!$im->writeImage($path_thumb)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function applyWaterMark($path_img) {
+        $params = $this->getParams();
+        $waterMark_url = $params->get('thumb_marca_dagua_link', false);
+
+        if (!$waterMark_url) {
+            return false;
+        }
+
+        $waterMark_name = end(explode('/', $marca_url));
+        $waterMark_path = JPATH_BASE . '/images/stories/watermark/' . $waterMark_name;
+        if (!File::exists($waterMark_path)) {
+            $ch = curl_init($waterMark_url);
+            if (!$ch) {
+                echo 'Curl is not installed!';
+            } else {
+                curl_setopt($ch, CURLOPT_URL, $waterMark_url);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+                $output = curl_exec($ch);
+                curl_close($ch);
+            }
+
+            if (!$output) {
+                return false;
+            }
+
+            File::write($waterMark_path, $output);
+        }
+
+        $waterMark_image = imagecreatefrompng($waterMark_path);
+        if (!$waterMark_image) {
+            return false;
+        }
+
+        $pontoX = imagesx($waterMark_image);
+        $pontoY = imagesy($waterMark_image);
+        list($width, $height) = getimagesize($path_img);
+        list($waterMark_width, $waterMark_height) = getimagesize($waterMark_path);
+
+        $waterMarkX = $params->get('thumb_marca_dagua_posx', ($width-$waterMark_width)/2);
+        $waterMarkY = $params->get('thumb_marca_dagua_posy', ($height-$waterMark_height)/2);
+        $transparency = $params->get('thumb_marca_dagua_transparencia', 30);
+
+        $image_info = pathinfo($path_img);
+        switch (strtolower($image_info['extension'])) {
+            case 'jpg':
+            case 'jpeg':
+                $new_image = imagecreatefromjpeg($path_img);
+                imagecopymerge($new_image, $waterMark_image, $waterMarkX, $waterMarkY, 0, 0, $pontoX, $pontoY, $transparency);
+                imagejpeg($new_image, $path_img, 100);
+                break;
+            case 'png':
+                $new_image = imagecreatefrompng($path_img);
+                imagecopymerge($new_image, $waterMark_image, $waterMarkX, $waterMarkY, 0, 0, $pontoX, $pontoY, $transparency);
+                imagepng($new_image, $path_img, 100);
+                break;
+            case 'gif':
+                $new_image = imagecreatefromgif($path_img);
+                imagecopymerge($new_image, $waterMark_image, $waterMarkX, $waterMarkY, 0, 0, $pontoX, $pontoY, $transparency);
+                imagegif($new_image, $path_img);
+                break;
+        }
+
+        if (!$new_image) {
+            return false;
+        }
+
+        imagedestroy($new_image);
+        imagedestroy($waterMark_image);
+
+        return true;
+    }
+
+    public function onAfterProcess() {
+        $input = $this->app->input;
+        $params = $this->getParams();
+        $formModel = $this->getFormModel();
+        $rowId = $formModel->formData['rowid'];
+
+        // If option 'principal' is selected, stores the main_image name on database (JP)
+        if ($params->get("fu_show_image_in_table") === '3') {
+            //Add column main_image on table if doesn't exist
+            $this->addColumnPrincipal();
+
+            $this->updatePrincipal();
+        }
+
+        if (!(bool) $params->get('upload_show_thumb')) {
+            return;
+        }
+        $thumb_dir_path = $params->get('thumb_dir');
+        $shouldSort = (bool) $params->get('upload_ordenacao');
+        $shouldCaption = (bool) $params->get('upload_caption');
+        $db = Factory::getContainer()->get('DatabaseDriver');
+
+        $table = $this->getTableName();
+        $fullName = $this->getFullName();
+        $name = $this->getElement()->name;
+        $files = $formModel->fullFormData[$fullName];
+
+        if (!(bool) $params->get('ajax_upload')) {
+            $arr = array();
+            $arr[] = $files;
+            $files = $arr;
+        }
+
+        $orders = $input->get($this->getFullName() . '_order');
+        $captions = $input->getString($this->getFullName() . '_caption');
+        $rotates = $input->getString($this->getFullName() . '_rotate');
+
+        $i = count($files)-1;
+        foreach ($files as $file) {
+            $fileFormated = str_replace('\\', '/', $file);
+            $fileName = end(explode('/', $fileFormated));
+            $ext = end(explode('.', $fileName));
+
+            if ($ext === 'pdf') {
+                $path_thumb = JPATH_BASE . '/' . $thumb_dir_path . '/' . $fileName;
+                $path_thumb = str_replace('.pdf', '.png', $path_thumb);
+                $this->createPdfThumb($file, $path_thumb);
+            }
+
+            $fileNameWithoutExt = str_replace('.' . $ext, '', $fileName);
+            if ($ext !== 'pdf') {
+                $path_thumb_img = JPATH_BASE . '/' . $thumb_dir_path . '/' . $fileName;
+            }
+            else {
+                $path_thumb_img = JPATH_BASE . '/' . $thumb_dir_path . '/' . $fileNameWithoutExt . '.png';
+            }
+
+            $this->applyWaterMark($path_thumb_img);
+
+            if (is_array($rotates)) {
+                $rotate = $rotates[$i];
+                if (($rotate) && ($rotate !== 'default')) {
+                    switch ($rotate) {
+                        case 'left':
+                            $this->rotateImageGD($path_thumb_img, $path_thumb_img, 90);
+                            break;
+                        case 'right':
+                            $this->rotateImageGD($path_thumb_img, $path_thumb_img, 270);
+                            break;
+                        case 'inverter':
+                            $this->rotateImageGD($path_thumb_img, $path_thumb_img, 180);
+                            break;
+                    }
+                }
+            }
+
+            $query = $db->getQuery(true);
+            $query->select('id, params')->from($table . '_repeat_' . $name)->where('parent_id = ' . (int)$rowId . ' AND ' . $name . ' = "' . $db->escape($file) . '"');
+            $db->setQuery($query);
+
+            $result = $db->loadAssoc();
+            $id = $result['id'];
+            $params_1 = $result['params'];
+            if ($params_1) {
+                $params_1 = json_decode($params_1);
+            }
+
+            if ($shouldCaption) {
+                $params_1->caption = $captions[$i];
+            }
+
+            if ($shouldSort) {
+                $params_1->ordenacao = $orders[$i];
+            }
+            $params_1 = json_encode($params_1);
+            $obj = new stdClass();
+            $obj->id = $id;
+            $obj->params = $params_1;
+            $insert = $db->updateObject($table . '_repeat_' . $name, $obj, 'id');
+
+            $i--;
+        }
+    }
 
 	/**
 	 * OPTIONAL
@@ -1863,6 +2282,34 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$formModel->updateFormData($name . '_raw', $files);
 		$formModel->updateFormData($name, $files);
 	}
+
+	public function onMakeThumbnail() {
+	    $input = $this->app->input;
+	    $width_thumb = $input->get('width_thumb');//$_POST['width_thumb'];
+        $height_thumb = $input->get('height_thumb');//$_POST['height_thumb'];
+	    $filename = $input->getString('filename');//$_POST['filename'];
+	    $original_path_dir = $input->getString('original_path_dir');//$_POST['original_path_dir'];
+	    $path = JPATH_BASE . $original_path_dir . $filename;
+	    $ext = end(explode('.', $filename));
+        $filename = str_replace('.' . $ext, '.png', $filename);
+        $path_thumb = JPATH_BASE . '/' . $input->getString('path') . '/' . $filename;
+
+        if (($ext !== 'pdf') || (!File::exists($path)) || (File::exists($path_thumb))) {
+	        echo json_encode('');
+        } else {
+            $im = new Imagick($path . '[0]');
+            $im->setImageFormat("png");
+            $im->setImageBackgroundColor(new ImagickPixel('white'));
+            $im->thumbnailImage($width_thumb, $height_thumb);
+            $im->writeImage($path_thumb);
+
+            if (File::exists($path_thumb)) {
+                echo json_encode($path_thumb);
+            } else {
+                echo json_encode('');
+            }
+        }
+    }
 
 	/**
 	 * Delete all files
@@ -2027,6 +2474,23 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			return;
 		}
 
+		$thumb_dir_path = $params->get('thumb_dir', "images/stories/thumbs");
+
+		$ext = '.' . end(explode('.', $filename));
+		if ($ext === '.pdf') {
+            $filenamealt = str_replace('\\', '/', $filename);
+            $filenamealt = end(explode('/', $filenamealt));
+            $filenamealt = str_replace($ext, '.png', $filenamealt);
+		    $filepath_thumb = JPATH_BASE . '/' . $thumb_dir_path . '/' . $filenamealt;
+
+		    if (File::exists($filepath_thumb)) {
+		        File::delete($filepath_thumb);
+            }
+        }
+
+		$storage = $this->getStorage();
+		$file    = $storage->clean($filename);
+
 		$thumb   = $storage->clean($storage->_getThumb($filename));
 		$cropped = $storage->clean($storage->_getCropped($filename));
 
@@ -2067,6 +2531,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 				}
 			}
 		}
+
 	}
 
 	/**

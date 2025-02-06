@@ -25,6 +25,34 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                 this.ajaxFolder();
             }
 
+            function toObject(arr) {
+                var rv = {};
+                for (var i = 0; i < arr.length; ++i)
+                    rv[i] = arr[i];
+                return rv;
+            }
+
+
+            if (self.options.ordenacao) {
+                var newFiles = Object.values(this.options.files);
+                if (newFiles) {
+                    newFiles.sort(function (a, b) {
+                        if ((a.params.ordenacao) && (b.params.ordenacao)) {
+                            if (((a.params.ordenacao > b.params.ordenacao)) || ((!a.params.ordenacao) && (b.params.ordenacao))) {
+                                return 1;
+                            }
+                            if (((a.params.ordenacao < b.params.ordenacao)) || ((a.params.ordenacao) && (!b.params.ordenacao))) {
+                                return -1;
+                            }
+                            return 0;
+                        }
+                    });
+
+                    this.options.files = toObject(newFiles);
+                    self = this;
+                }
+            }
+
             this.doBrowseEvent = null;
             this.watchBrowseButton();
 
@@ -462,14 +490,81 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                             window.alert(Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_MAX_UPLOAD_REACHED'));
                         } else {
                             count++;
-                            var a, title, innerLi;
+                            var a, b, c, d, e, value, title, img_thumb, innerLi;
                             if (self.isImage(file)) {
                                 a = self.editImgButton();
+                                if (self.options.principal) {
+                                    b = self.editImgButton();
+                                }
+                                c = self.editImgButton();
+                                d = self.editImgButton();
+
                                 if (self.options.crop) {
                                     a.html(self.options.resizeButton);
+                                    if (self.options.principal) {
+                                        b.html(self.options.resizeButton);
+                                    }
+                                    c.html(self.options.resizeButton);
+                                    d.html(self.options.resizeButton);
                                 } else {
                                     a.html(self.options.previewButton);
+                                    if (self.options.principal) {
+                                        b.html(self.options.previewButton);
+                                    }
+                                    c.html(self.options.previewButton);
+                                    d.html(self.options.previewButton);
                                 }
+
+                                //Format the name of the file (JP)
+                                if (file.name.indexOf("/") >= 0) {
+                                    value = file.name.split("/");
+                                    value = value[value.length-1];
+                                }
+                                else if (file.name.indexOf("\\") >= 0) {
+                                    value = file.name.split("\\");
+                                    value = value[value.length-1];
+                                }
+                                else {
+                                    value = file.name;
+                                }
+
+                                //Make the radio button if option 'principal' is selected (JP)
+                                if (self.options.principal) {
+                                    var main_image = self.options.main_image;
+                                    var element_name = self.options.elementShortName;
+
+                                    b = "<input type='radio' name='p_" + element_name + "' value='" + value + "' class='form-control fabrik-input inputradio'>";
+                                    if (main_image) {
+                                        if (main_image[element_name]) {
+                                            if (main_image[element_name].name === value) {
+                                                b = "<input type='radio' name='p_" + element_name + "' value='" + value + "' class='form-control fabrik-input inputradio' checked>";
+                                            }
+                                        }
+                                    }
+                                }
+
+                                //Make the img tag if option show image in upload is selected (JP)
+                                if (self.options.replace_file_name) {
+                                    img_thumb = jQuery (document.createElement ('img')).attr ({
+                                        "name": value,
+                                        "class": self.options.elementShortName + "_thumb",
+                                    });
+                                    c = "<input type='text' class='form-control fabrik-input text' style='height: 30px; width: 65%; margin-top: 30px; margin-left: -20px; position: absolute;'>";
+                                }
+
+                                if (self.options.rotate) {
+                                    d = "<label style='width: 20%; margin-top: 50px; margin-left: 0px; position: relative'>Girar:</label><select class='form-control' style='height: 30px; width: 35%; margin-top: -30px; margin-left: 40px; position: absolute'>" +
+                                        "<option value='default'>Selecione</option>" +
+                                        "<option value='left'>Esquerda</option>" +
+                                        "<option value='right'>Direita</option>" +
+                                        "<option value='inverter'>Inverter</option>" +
+                                        "</select>";
+                                }
+
+                                if (self.options.ordenacao) {
+                                    e = "<input type='number' class='form-control' style='height: 30px; width: 14%; margin-top: -30px; margin-left: 50%; position: absolute'>"
+                                }
+
                                 title = jQuery(document.createElement('span')).text(file.name);
                             } else {
                                 a = jQuery(document.createElement('span'));
@@ -477,9 +572,35 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                                     'href': file.url,
                                     'target': '_blank'
                                 }).text(file.name);
+                                if (self.options.replace_file_name) {
+                                    if (file.name.indexOf("/") >= 0) {
+                                        value = file.name.split("/");
+                                        value = value[value.length-1];
+                                    }
+                                    else if (file.name.indexOf("\\") >= 0) {
+                                        value = file.name.split("\\");
+                                        value = value[value.length-1];
+                                    }
+                                    else {
+                                        value = file.name;
+                                    }
+                                    var ext = value.split('.');
+                                    if (ext) {
+                                        ext = ext[ext.length - 1];
+                                        value = value.replace(ext, "png");
+                                        img_thumb = jQuery (document.createElement ('img')).attr ({
+                                            "class": self.options.elementShortName + "_thumb"
+                                        });
+                                    }
+                                    c = jQuery (document.createElement ('input')).attr ({
+                                        "type": "text",
+                                        "class": "form-control fabrik-input text",
+                                        "style": "height: 30px; width: 55%; margin-top: 35px; margin-left: -10px; position: absolute;"
+                                    });
+                                }
                             }
 
-                            innerLi = self.imageCells(file, title, a);
+                            innerLi = self.imageCells(file, title, a, b, c, d, e, img_thumb);
 
                             self.droplist.append(jQuery(document.createElement(rElement)).attr({
                                 id     : file.id,
@@ -487,6 +608,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                             }).append(innerLi));
                         }
                     }
+
                 });
 
                 // Automatically start the upload - need delay to ensure up.files is populated
@@ -533,7 +655,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
             });
 
             this.uploader.bind('FileUploaded', function (up, file, response) {
-                var name, showWidget, f, resizeButton, idValue,
+                var name, showWidget, f, resizeButton, idValue, principal, caption, thumb, rotate, ordenacao, valuePrincipal,
                     f = jQuery('#' + file.id)
                 response = JSON.parse(response.response);
                 if (response.error) {
@@ -555,9 +677,91 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
 
                 resizeButton.data('filepath', response.filepath);
 
-                if (self.widget) {
-                    showWidget = response.showWidget === false ? false : true;
-                    self.widget.setImage(response.uri, response.filepath, file.params, showWidget);
+                //Format the name of the file (JP)
+                if (response.uri.indexOf("/") >= 0) {
+                    valuePrincipal = response.uri.split("/");
+                    valuePrincipal = valuePrincipal[valuePrincipal.length-1];
+                }
+                else if (response.uri.indexOf("\\") >= 0) {
+                    valuePrincipal = response.uri.split("\\");
+                    valuePrincipal = valuePrincipal[valuePrincipal.length-1];
+                }
+                else {
+                    valuePrincipal = response.uri;
+                }
+
+                principal = f.find('.plupload_principal input');
+                principal.show();
+                principal.attr({
+                    value: valuePrincipal
+                });
+                principal.data('filepath', response.filepath);
+
+                thumb = f.find('.plupload_thumb img');
+                thumb.show();
+                thumb.attr({
+                    name: valuePrincipal
+                });
+
+                var aux_ext = valuePrincipal.split('.');
+                aux_ext = aux_ext[aux_ext.length-1];
+                caption = f.find('.plupload_resize input[type="text"]');
+                caption.show();
+                caption.attr({
+                    //name: 'caption_' + self.options.elementShortName + '_' + valuePrincipal.replace('.' + aux_ext, '')
+                    name: self.options.fullName + '_caption[]'
+                });
+
+                rotate = f.find('.plupload_resize select');
+                rotate.show();
+                rotate.attr({
+                    //name: 'rotate_' + self.options.elementShortName + '_' + valuePrincipal.replace('.' + aux_ext, '')
+                    name: self.options.fullName + '_rotate[]'
+                });
+
+                ordenacao = f.find('.plupload_resize input[type="number"]');
+                ordenacao.show();
+                ordenacao.attr({
+                    //name: 'ordenacao_' +  self.options.elementShortName + '_' + valuePrincipal.replace('.' + aux_ext, '')
+                    name: self.options.fullName + '_order[]'
+                })
+
+                var existCaption, existsOrdenacao;
+                if (self.options.files) {
+                    var i=0;
+                    while (self.options.files[i]) {
+                        if ((self.options.files[i].name === valuePrincipal) || (self.options.files[i].name === self.options.original_path_dir + valuePrincipal)) {
+                            if (self.options.files[i].params) {
+                                if (self.options.files[i].params.caption) {
+                                    existCaption = self.options.files[i].params.caption;
+                                }
+                                if (self.options.files[i].params.ordenacao) {
+                                    existsOrdenacao = self.options.files[i].params.ordenacao;
+                                }
+                            }
+                        }
+                        i++;
+                    }
+                }
+
+                if (existCaption) {
+                    caption.attr ({
+                        value: existCaption
+                    });
+                }
+                else {
+                    var value_caption = file.name;
+                    value_caption = value_caption.split('.');
+                    value_caption = value_caption[0];
+                    caption.attr ({
+                        value: value_caption
+                    });
+                }
+
+                if (existsOrdenacao) {
+                    ordenacao.attr ({
+                        value: existsOrdenacao
+                    });
                 }
 
                 if (self.options.inRepeatGroup) {
@@ -565,6 +769,17 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                 } else {
                     name = self.options.elementName;
                 }
+
+                if (self.widget) {
+                    if (self.options.show_preview !== false) {
+                        showWidget = response.showWidget === false ? false : true;
+                    }
+                    else {
+                        showWidget = false;
+                    }
+                    self.widget.setImage(response.uri, response.filepath, file.params, showWidget);
+                }
+
                 // Stores the cropparams which we need to reload the crop widget in the correct state (rotation, zoom, etc)
                 jQuery(document.createElement('input')).attr({
                     'type' : 'hidden',
@@ -590,8 +805,62 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     'value': idValue
                 }).insertAfter(self.pluploadContainer);
 
-                f.removeClass('plupload_file_action').addClass('plupload_done');
+                var filename = valuePrincipal;
+                var ext;
+                ext = filename.split(".");
+                ext = ext[ext.length-1];
+                if ((ext === 'pdf') && (self.options.make_pdf_thumb)) {
+                    var data = {
+                        'option'       : 'com_fabrik',
+                        'format'       : 'raw',
+                        'task'         : 'plugin.pluginAjax',
+                        'plugin'       : 'fileupload',
+                        'method'       : 'makeThumbnail',
+                        'element_id'   : self.options.id,
+                        'filename': filename,
+                        'original_path_dir': self.options.original_path_dir,
+                        'path': self.options.path,
+                        'width_thumb': self.options.width_thumb,
+                        'height_thumb': self.options.height_thumb
+                    }
 
+                    data[self.options.ajaxToken] = 1;
+
+                    jQuery.ajax({
+                        url : '',
+                        data: data,
+                        complete: () => {
+                            var thumbs = document.getElementsByClassName (self.options.elementShortName + "_thumb"), old_name, new_name;
+                            jQuery.each (thumbs, (key, thumb) => {
+                                name = thumb.getAttribute ("name");
+                                old_name = name.replace('.pdf', '');
+                                new_name = filename.replace ('.pdf', '');
+                                if (new_name === old_name) {
+                                    thumb.setAttribute ("src", Fabrik.liveSite + self.options.path + '/' + new_name + '.png?' + new Date().getTime());
+                                    thumb.setAttribute ("style", "width: 150px; height: 80px");
+                                }
+                            });
+                        }
+                    }).done(function (r) {
+                        r = JSON.parse(r);
+                    });
+                }
+
+                //Set the image to img tag after the image upload (JP)
+                if (self.options.replace_file_name) {
+                    var thumbs = document.getElementsByClassName (self.options.elementShortName + "_thumb");
+                    if (ext !== 'pdf') {
+                        jQuery.each (thumbs, (key, thumb) => {
+                            name = thumb.getAttribute ("name");
+                            if (name === filename) {
+                                thumb.setAttribute ("src", Fabrik.liveSite + self.options.path + '/' + name + '?' + new Date().getTime());
+                                thumb.setAttribute ("style", "width: 150px; height: 80px");
+                            }
+                        });
+                    }
+                }
+
+                f.removeClass('plupload_file_action').addClass('plupload_done');
                 self.isSubmitDone();
             });
 
@@ -604,15 +873,43 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
          *
          * @return {array}
          */
-        imageCells: function (file, title, a) {
-            var del = this.deleteImgButton(), filename, status, progress, icon;
+        imageCells: function (file, title, a, b, c, d, e, img_thumb) {
+            var del = this.deleteImgButton(), filename, status, principal, thumb, progress, icon;
             if (Fabrik.bootstrapped) {
                 icon = jQuery(document.createElement('td')).addClass(this.options.spanNames[1] + ' plupload_resize').append(a);
                 progress = Fabrik.jLayouts['fabrik-progress-bar'];
                 status = jQuery(document.createElement('td')).addClass(this.options.spanNames[5] + ' plupload_file_status').html(progress);
-                filename = jQuery(document.createElement('td')).addClass(this.options.spanNames[6] + ' plupload_file_name').append(title);
 
-                return [filename, icon, status, del];
+                //Hide the file name if option show image is selected (JP)
+                if (this.options.replace_file_name) {
+                    filename = jQuery (document.createElement ('td')).addClass (this.options.spanNames[6] + ' plupload_file_name').attr ("style", "display: none;").append (title);
+                    //Add the caption field if option is selected (JP)
+                    if ((this.options.caption) && (c)) {
+                        icon.append (c);
+                    }
+                    if ((this.options.rotate) && (d)) {
+                        icon.append (d);
+                    }
+                    if ((this.options.ordenacao) && (e)) {
+                        icon.append (e);
+                    }
+                }
+                else {
+                    filename = jQuery (document.createElement ('td')).addClass (this.options.spanNames[6] + ' plupload_file_name').append (title);
+                }
+
+                //Create the column to insert the radio button for main_image (JP)
+                if (b) {
+                    principal = jQuery(document.createElement('td')).addClass(this.options.spanNames[1] + ' plupload_principal').append(b);
+                }
+                //Create the column to insert img thumb (JP)
+                if (img_thumb) {
+                    thumb = jQuery(document.createElement('td')).addClass(this.options.spanNames[6] + ' plupload_thumb').append(img_thumb);
+                }
+
+
+
+                return [thumb, filename, icon, principal, status, del];
             } else {
                 filename = new Element('div', {
                     'class': 'plupload_file_name'
@@ -719,8 +1016,11 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
 
         pluploadRemoveFile: function (e) {
             e.stopPropagation();
-            if (!window.confirm(Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_CONFIRM_HARD_DELETE'))) {
-                return;
+            //Show the confirmation message only if option delete image is 'yes' (JP)
+            if (this.options.canDelete === '1') {
+                if (!window.confirm(Joomla.JText._('PLG_ELEMENT_FILEUPLOAD_CONFIRM_HARD_DELETE'))) {
+                    return;
+                }
             }
 
             var id = jQuery(e.target).closest('tr').prop('id').split('_').pop();// alreadyuploaded_8_13
@@ -749,7 +1049,8 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     'element_id'   : this.options.id,
                     'file'         : f,
                     'recordid'     : id,
-                    'repeatCounter': this.options.repeatCounter
+                    'repeatCounter': this.options.repeatCounter,
+                    'canDelete'    : this.options.canDelete
             }
 
             data[this.options.ajaxToken] = 1;

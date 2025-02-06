@@ -18,7 +18,12 @@ if ($d->useThumb) :
 else :
 	?>
 	<a class="download-archive fabrik-filetype-<?php echo $d->ext;?>" title="<?php echo $d->file; ?>" href="<?php echo $d->file; ?>">
-		<?php echo $d->filename; ?>
+		<?php 
+		$dfilename = explode(".",$d->filename);
+                $exten = end($dfilename);
+                $aqvmin = mb_strimwidth($d->filename, 0, 10, "...");
+                $aqvmin= $aqvmin . '.' . $exten;
+		echo "<span style='background: #2d6a6b;color: #fff; font-size: 10px; display: inline-block; min-width: auto;  border-radius: 4px;text-align: center;padding: 0 3px'>$aqvmin</span>"; ?>
 	</a>
 <?php
 endif;
