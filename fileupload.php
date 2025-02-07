@@ -4362,7 +4362,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$query = $db->getQuery(true);
 
 		// Could be a single ajax file-upload if so not joined
-		if ($join->table_join != '')
+		if ($join->table_join != '' && is_numeric($input->getString('recordid')))
 		{
 			// Use getString as if we have edited a record, added a file and deleted it the id is alphanumeric and not found in db.
 			$query->delete($db->qn($join->table_join))

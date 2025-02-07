@@ -970,35 +970,56 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
          * @return {jQuery}
          */
         deleteImgButton: function () {
-            // if (Fabrik.bootstrapped) {
+            if (Fabrik.bootstrapped) {
+                var icon = Fabrik.jLayouts['fabrik-icon-delete'],
+                    self = this;
+                var linkHref = window.location.href.indexOf('#') > -1 ? window.location.href : window.location.href + '#';
+                return jQuery(document.createElement('td')).addClass(this.options.spanNames[1] + ' plupload_file_action').append(
+                    jQuery(document.createElement('a'))
+                        .html(icon)
+                        .attr({
+                            'href' : linkHref     //Id task: 289
+                        })
+                        .on('click', function (e) {
+                            e.stopPropagation();
+                            self.pluploadRemoveFile(e);
 
-            //     var icon = Fabrik.jLayouts['fabrik-icon-delete'],
-            //         self = this;
-            //     return jQuery(document.createElement('td')).addClass(this.options.spanNames[1] + ' plupload_file_action').append(
-            //         jQuery(document.createElement('a'))
-            //             .html(icon)
-            //             .attr({
-            //                 'href' : '#'
-            //             })
-            //             .on('click', function (e) {
-            //                 e.stopPropagation();
-            //                 self.pluploadRemoveFile(e);
-            //             })
-            //     );
+                             /**
+                             * Begin - Toogle Submit in fileupload
+                             * Adding fileupload multi to validation Toogle Submit
+                             * This way the event will be trigger and the value must be taken in validate function (components/com_fabrik/models/form.php)  
+                             * 
+                             * Id Task: 68
+                             */
+                            jQuery('#'+element.id).trigger('change');
+                            //End - Toogle Submit in fileupload
+                        })
+                );
 
-            // } else {
-            //     return new Element('div', {
-            //         'class': 'plupload_file_action'
-            //     }).adopt(new Element('a', {
-            //         'href' : '#',
-            //         'style': 'display:block',
-            //         events : {
-            //             'click': function (e) {
-            //                 this.pluploadRemoveFile(e);
-            //             }.bind(this)
-            //         }
-            //     }));
-            // }
+            } else {
+                return new Element('div', {
+                    'class': 'plupload_file_action'
+                }).adopt(new Element('a', {
+                    'href' : linkHref,     //Id task: 289
+                    'style': 'display:block',
+                    events : {
+                        'click': function (e) {
+                            e.preventDefault();  // Adicionado para prevenir o comportamento padrão
+                            this.pluploadRemoveFile(e);
+
+                             /**
+                             * Begin - Toogle Submit in fileupload
+                             * Adding fileupload multi to validation Toogle Submit
+                             * This way the event will be trigger and the value must be taken in validate function (components/com_fabrik/models/form.php)  
+                             * 
+                             * Id Task: 68
+                             */
+                             jQuery('#'+element.id).trigger('change');
+                             //End - Toogle Submit in fileupload
+                        }.bind(this)
+                    }
+                }));
+            }
         },
 
         /**
@@ -1042,15 +1063,15 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
             var self = this;
             var data = {
                 'option'       : 'com_fabrik',
-                    'format'       : 'raw',
-                    'task'         : 'plugin.pluginAjax',
-                    'plugin'       : 'fileupload',
-                    'method'       : 'ajax_deleteFile',
-                    'element_id'   : this.options.id,
-                    'file'         : f,
-                    'recordid'     : id,
-                    'repeatCounter': this.options.repeatCounter,
-                    'canDelete'    : this.options.canDelete
+                'format'       : 'raw',
+                'task'         : 'plugin.pluginAjax',
+                'plugin'       : 'fileupload',
+                'method'       : 'ajax_deleteFile',
+                'element_id'   : this.options.id,
+                'file'         : f,
+                'recordid'     : id,
+                'repeatCounter': this.options.repeatCounter,
+                'canDelete'    : this.options.canDelete
             }
 
             data[this.options.ajaxToken] = 1;
