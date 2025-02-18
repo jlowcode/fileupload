@@ -486,7 +486,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$opts->iconDelete       = Html::icon("icon-delete",  '', '', true);
 		$opts->spanNames        = array();
 		$opts->isCarousel       = $params->get('fu_show_image') === '3' && !$this->isEditable();
-		$opts->isZoom           = $params->get('fu_show_image') === '3' && !$this->isEditable();;
+		$opts->isZoom           = false;
 		$opts->htmlId           = $id;
 
 		//Check if the option Principal is selected (JP)
@@ -4405,6 +4405,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	 */
 	public function buildCarousel($id = 'carousel', $data = array(), $thisRow = null, $nav = true)
 	{
+		$doc				= Factory::getDocument();
 		$rendered = '';
 
 		if (!FArrayHelper::emptyIsh($data))
@@ -4413,6 +4414,19 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			$params   = $this->getParams();
 			$rendered = $render->renderCarousel($id, $data, $this, $params, $thisRow, $nav);
 		}
+
+		$doc->addStyleDeclaration("
+			.slick-arrow:before {
+				font-size: 30px !important;
+				background: #ddd;
+				padding: 5px !important;
+				border-radius: 5px;
+			}
+
+			.slick-next {
+    			right: 0px !important;
+			}
+		");
 
 		return $rendered;
 	}
