@@ -20,7 +20,7 @@ else :
 		if ($d->isJoin) :
 			?>
 			<div class="fabrikGalleryImage"
-			style="width:<?php echo $d->width;?>px;height:<?php echo $d->height;?>px; vertical-align: middle;text-align: center;">
+			style="vertical-align: middle;text-align: center;">
 		<?php
 		endif;
 
@@ -40,7 +40,3 @@ else :
 		endif;
 	endif;
 endif;
-
-
-
-
