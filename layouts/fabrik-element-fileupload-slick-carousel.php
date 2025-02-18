@@ -6,7 +6,6 @@ $d      = $displayData;
 
 <?php if ($d->nav) : ?>
 <div id="<?php echo $d->id;?>"
-     style="width:<?php echo $d->width;?>px"
      class="slickCarousel"
      data-slick='{"slidesToShow": 1, "slidesToScroll": 1, "arrows": true, "fade": true, "pauseOnHover": true, "pauseOnFocus": true, "mobileFirst": true, "adaptiveHeight": true, "swipe": true}'
 >
