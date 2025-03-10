@@ -12,7 +12,7 @@ $ext = File::getExt($d->filename);
     echo "<div style=\"vertical-align: middle;\">";
 
     if (!$d->inFormView) {
-        echo "<a href='{$d->file}'>";
+        echo "<a href='{$d->file}' download='{$d->caption}' target='_blank'>";
     }
     else {
         echo "<a class=\"download-archive fabrik-filetype-{$ext}\" title=\"{$d->caption}\"
