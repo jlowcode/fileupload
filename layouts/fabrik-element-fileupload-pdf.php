@@ -24,8 +24,11 @@ $ext = File::getExt($d->filename);
             ?>
             <img src="<?php echo $d->path_thumb; ?>" alt="<?php if ($d->caption) echo $d->caption; else echo $d->name_thumb; ?>"/>
             <?php
-        }
-        else if (File::exists(JPATH_BASE . '/' . $d->default_path)) {
+        } else if ((isset($d->thumb) && !empty($d->thumb))) {
+            ?>
+            <img src="<?php echo $d->thumb ?>" alt="<?php echo $d->fileName?>"/>
+            <?php
+        } else if (File::exists(JPATH_BASE . '/' . $d->default_path)) {
             ?>
             <img src="<?php echo COM_FABRIK_LIVESITE . $d->default_path;?>" alt="<?php if ($d->caption) echo $d->caption; else echo 'pdf'; ?>" />
             <?php

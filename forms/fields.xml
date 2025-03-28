@@ -179,6 +179,9 @@
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 				<option value="2">PLG_ELEMENT_FILEUPLOAD_SLIDESHOW</option>
+
+				<!-- If selected, shows only the image selected as principal (JP) -->
+				<option value="3">PLG_ELEMENT_FILEUPLOAD_PRINCIPAL</option>
 			</field>
 
 			<field name="fu_show_image"
