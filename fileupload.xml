@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 3 or later; see software_license.txt</license>
 	<authorEmail>team@fabrikar.com</authorEmail>
 	<authorUrl>https://www.fabrikar.com</authorUrl>
-	<version>4.1</version>
+	<version>4.1.1</version>
 	<help url="PLG_ELEMENT_FILEUPLOAD_HELP_SERVER"/>
 	<description>PLG_ELEMENT_FILEUPLOAD_DESCRIPTION</description>
 	<files>
