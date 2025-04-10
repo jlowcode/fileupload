@@ -1874,11 +1874,11 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
         $db = Factory::getContainer()->get('DatabaseDriver');
         $db->setQuery("
 	        ALTER TABLE " . $table .
-            " ADD COLUMN IF NOT EXISTS" .
+            " ADD COLUMN" .
             " main_image text"
         );
         try {
-            $db->execute();
+            //$db->execute();
         } catch (RuntimeException $e) {
             $err = new stdClass;
             $err->error = $e->getMessage();
@@ -2091,6 +2091,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
         if (!(bool) $params->get('upload_show_thumb')) {
             return;
         }
+
         $thumb_dir_path = $params->get('thumb_dir');
         $shouldSort = (bool) $params->get('upload_ordenacao');
         $shouldCaption = (bool) $params->get('upload_caption');
@@ -2161,6 +2162,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
                 $params_1 = json_decode($params_1);
             }
 
+			$params_1 = (Object) $params_1;
             if ($shouldCaption) {
                 $params_1->caption = $captions[$i];
             }

@@ -62,7 +62,7 @@ class ImageRenderModel
 	 * @return  void
 	 */
 
-	public function render(&$model, &$params, $file, $thisRow = null)
+	public function render(&$model, &$params, $file, $thisRow = null, $view = 'list')
 	{
 		/*
 		 * $$$ hugh - added this hack to let people use elementname__title as a title element
@@ -70,8 +70,16 @@ class ImageRenderModel
 		 * So we have to work out if we're being called from a table or form
 		 */
 		$formModel = $model->getFormModel();
+		$input = JFactory::getApplication()->input;
 		$listModel = $model->getListModel();
 		$title     = basename($file);
+		$table = $listModel->getTable()->db_table_name . '_repeat_' . $model->element->name;
+        $rowId = $formModel->getRowId();
+        $fileNameToCaption = $file;
+        $inFormView = false;
+        if ($formModel->data) {
+            $inFormView = true;
+        }
 
 		if ($params->get('fu_title_element') == '')
 		{
@@ -136,16 +144,29 @@ class ImageRenderModel
 		$displayData->fullSize      = $model->storage->preRenderPath($fullSize);
 		$displayData->file          = $file;
 		$displayData->makeLink      = $params->get('make_link', true)
-			&& !$this->fullImageInRecord($params)
+			//Necessary to comment this to make link to original file when the file is a thumb or a crop (JP) && $this->fullImageInRecord($params)
 			&& $listModel->getOutPutFormat() !== 'feed';
 		$displayData->title         = $title;
 		$displayData->isJoin        = $model->isJoin();
 		$displayData->width         = $width;
 		$displayData->showImage     = $params->get('fu_show_image');
+		$displayData->view = $input->get('view');
 		$displayData->inListView    = $this->inTableView;
 		$displayData->height        = $height;
 		$displayData->isSlideShow   = ($this->inTableView && $params->get('fu_show_image_in_table', '0') == '2')
 			|| (!$this->inTableView && !$formModel->isEditable() && $params->get('fu_show_image', '0') == '3');
+
+		if ((bool) $params->get('ajax_upload')) {
+            $displayData->caption = $this->getCaption($fileNameToCaption, $table, $model->element->name, $rowId);
+        }
+
+		$displayData->inFormView    = $inFormView;
+        $displayData->force_view = (bool) $params->get('force_view');
+		$displayData->elementName   = $model->element->name;
+
+		$displayData->url_details = COM_FABRIK_LIVESITE . "index.php?option=com_fabrik&view=details&Itemid={$input->get('Itemid')}&formid={$formModel->getId()}&rowid={$thisRow->__pk_val}&listid={$listModel->getId()}";
+
+		$displayData->default_image = $params->get('default_image', '#');
 
 		$this->output = $layout->render($displayData);
 	}
@@ -192,13 +213,9 @@ class ImageRenderModel
 	{
 		if ($this->inTableView)
 		{
-			if ($params->get('fu_show_image_in_table') === '2')
-			{
-				return true;
-			}
-
 			return ($params->get('make_thumbnail') || $params->get('fileupload_crop')) ? false : true;
 		}
+
 
 		if (($params->get('make_thumbnail') || $params->get('fileupload_crop')) && $params->get('fu_show_image') == 1)
 		{
@@ -228,32 +245,91 @@ class ImageRenderModel
 		$layoutData     = new stdClass;
 		$layoutData->id = $id;
 		list($layoutData->width, $layoutData->height) = $this->imageDimensions($params);
-		$imgs = array();
-		$thumbs = array();
 
 		if (!empty($data))
 		{
 			$imgs = array();
 			$i    = 0;
 
-			foreach ($data as $img)
+			$ordenacao = (bool) $params->get('upload_ordenacao');
+			if ($ordenacao) {
+                $db = JFactory::getDbo();
+                $rowId = $model->getFormModel()->getRowId();
+                $elementName = $model->element->name;
+                $table = $model->getFormModel()->getTableName() . '_repeat_' . $elementName;
+                $new_data = array();
+                $without_ordenacao = array();
+                foreach ($data as $item) {
+                    $query = $db->getQuery(true);
+                    $query->select('params')->from($table)->where("parent_id =  {$rowId} AND {$elementName} = '{$item}'");
+                    $db->setQuery($query);
+                    $result = $db->loadResult();
+                    $result = json_decode($result);
+                    $obj = new stdClass();
+                    $obj->data = $item;
+                    if ($result->ordenacao) {
+                        $obj->ordenacao = $result->ordenacao;
+                        $new_data[] = $obj;
+                    }
+                    else {
+                        $without_ordenacao[] = $obj;
+                    }
+                }
+                usort($new_data, function ($a, $b) {
+                    if ((($a->ordenacao > $b->ordenacao)) || ((!$a->ordenacao) && ($b->ordenacao))) {
+                        return 1;
+                    }
+                    if ((($a->ordenacao < $b->ordenacao)) || (($a->ordenacao) && (!$b->ordenacao))) {
+                        return -1;
+                    }
+                    return 0;
+                    /*if(($a->ordenacao == $b->ordenacao) || ((!$a->ordenacao) && (!$b->ordenacao))) return 0;
+                    return ((($a->ordenacao < $b->ordenacao) || (($a->ordenacao) && (!$b->ordenacao))) ? -1 : 1 );*/
+                });
+
+                $new_data = array_merge($new_data, $without_ordenacao);
+
+                foreach ($new_data as $item) {
+                    $model->_repeatGroupCounter = $i++;
+                    $this->renderListData($model, $params, $item->data, $thisRow);
+                    $imgs[] = $this->output;
+                }
+            }
+            else {
+                foreach ($data as $img) {
+                    $model->_repeatGroupCounter = $i++;
+                    $this->renderListData($model, $params, $img, $thisRow);
+                    $imgs[] = $this->output;
+                }
+            }
+
+			if (count($imgs) == 1)
 			{
-				$img = str_replace('\\', '/', $img);
-				$model->_repeatGroupCounter = $i++;
-				$this->renderListData($model, $params, $img, $thisRow);
-				$imgs[] = $this->output;
-				$showImage = $params->get('fu_show_image_in_table');
-				$params->set('fu_show_image_in_table', '2');
-				$this->renderListData($model, $params, $storage->_getThumb($img), $thisRow);
-				$params->set('fu_show_image_in_table', $showImage);
-				$thumbs[] = $this->output;
+				return $imgs[0];
 			}
 		}
 
 		$layoutData->imgs = $imgs;
-		$layoutData->thumbs = $thumbs;
 		$layoutData->nav = $nav;
 
 		return $layout->render($layoutData);
 	}
+
+	public function getCaption ($file, $table, $elementName, $rowId) {
+	    $db = JFactory::getDbo();
+	    $query = $db->getQuery(true);
+	    $query->select('params')->from($table)->where($elementName . ' = "' . $db->escape($file) . '" AND parent_id = ' . (int)$rowId);
+	    $db->setQuery($query);
+	    $result = $db->loadResult();
+
+	    $caption = '';
+	    if ($result) {
+	        $result = json_decode($result);
+	        if ($result->caption) {
+	            $caption = $result->caption;
+            }
+        }
+
+	    return $caption;
+    }
 }
