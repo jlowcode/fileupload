@@ -150,6 +150,7 @@ class PdfRenderModel
 		$displayData->filename = $filename;
 		$displayData->thumb    = $this->getThumbnail($model, $params, $file);
 		$displayData->make_pdf_thumb = $params->get('fu_make_pdf_thumb');
+		$displayData->showImage = (int) $params->get('fu_show_image');
 
 		$this->output = $layout->render($displayData);
 	}

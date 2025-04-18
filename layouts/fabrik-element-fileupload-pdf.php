@@ -30,7 +30,7 @@ $truncatedFileName = $fileBaseName . '.' . $fileExtension;
         <a class="download-archive fabrik-filetype-<?php echo $ext ?>" title="<?php echo $d->caption ?>" href="<?php echo $d->file ?>" target='_blank'>
     <?php endif; ?>
 
-    <?php if($d->make_pdf_thumb) : ?>
+    <?php if($d->make_pdf_thumb && $d->showImage != 0) : ?>
         <?php if(File::exists(JPATH_BASE . '/' . $d->path_thumb_dir . '/' . $d->name_thumb)) : ?>
             <img src="<?php echo $d->path_thumb; ?>" alt="<?php if ($d->caption) echo $d->caption; else echo $d->name_thumb; ?>"/>
 
