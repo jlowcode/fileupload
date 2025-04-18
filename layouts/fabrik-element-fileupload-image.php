@@ -9,23 +9,15 @@ $lightBox = $d->inFormView ? "data-lightbox={$d->elementName}" : "";
 $img    = '<img class="fabrikLightBoxImage" ' . $height . 'src="' . $d->file . '" alt="' . $alt . '" />';
 $nolinkImg    = '<img class="fabrikLightBoxImage" ' . $height . 'src="' . $d->file . '" alt="' . $alt . '" title="' . $alt . '" />';
 
-$file = $d->file;
-$fileName = basename($file);
+$dfilename = explode(".", $d->file);
+$exten = end($dfilename);
+$aqvmin = mb_strimwidth(basename($d->file), 0, 20, "...");
+$aqvmin = $aqvmin . $exten;
 
-$fileInfo = pathinfo($fileName);
-$fileBaseName = $fileInfo['filename'];
-$fileExtension = $fileInfo['extension'];
-$maxLength = 12;
-
-if (strlen($fileBaseName) > $maxLength) {
-    $fileBaseName = substr($fileBaseName, 0, $maxLength) . '...';
-}
-
-$truncatedFileName = $fileBaseName . '.' . $fileExtension;
 ?>
 
 <?php if ($d->showImage == 0 && !$d->inListView) : ?>
-	<a class="little-box-files" href="<?php echo $d->fullSize; ?>" download><?php echo $truncatedFileName?></a>
+	<a class="little-box-files" href="<?php echo $d->fullSize; ?>" download><?php echo $aqvmin?></a>
 <?php else : ?>
 	<?php if ($d->isSlideShow) : ?>
 			<!-- We're building a Bootstrap slideshow, just a simple img tag -->

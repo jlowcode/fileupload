@@ -7,19 +7,11 @@ defined('JPATH_BASE') or die;
 $d   = $displayData;
 $ext = File::getExt($d->filename);
 
-$file = $d->file;
-$fileName = basename($file);
+$dfilename = explode(".", $d->file);
+$exten = end($dfilename);
+$aqvmin = mb_strimwidth(basename($d->file), 0, 20, "...");
+$aqvmin = $aqvmin . $exten;
 
-$fileInfo = pathinfo($fileName);
-$fileBaseName = $fileInfo['filename'];
-$fileExtension = $fileInfo['extension'];
-$maxLength = 12;
-
-if (strlen($fileBaseName) > $maxLength) {
-    $fileBaseName = substr($fileBaseName, 0, $maxLength) . '...';
-}
-
-$truncatedFileName = $fileBaseName . '.' . $fileExtension;
 ?>
 
 <div style="vertical-align: middle;">
@@ -45,7 +37,7 @@ $truncatedFileName = $fileBaseName . '.' . $fileExtension;
         <?php endif; ?>
 
     <?php else : ?>
-        <span class="little-box-files" title='<?php echo $fileName ?>'><?php echo $truncatedFileName ?></span>
+        <span class="little-box-files" title='<?php echo $fileName ?>'><?php echo $aqvmin ?></span>
     <?php endif; ?>
     </a>
 </div>
