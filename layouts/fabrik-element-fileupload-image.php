@@ -3,40 +3,50 @@ defined('JPATH_BASE') or die;
 
 $d      = $displayData;
 $height = empty($d->height) ? '' : ' height="' . $d->height . 'px" ';
-$img    = '<img class="fabrikLightBoxImage" ' . $height . 'src="' . $d->file . '" alt="' . $d->title . '" />';
-$nolinkImg    = '<img class="fabrikLightBoxImage" ' . $height . 'src="' . $d->file . '" alt="' . $d->title . '" title="' . $d->title . '" />';
+$alt = ($d->caption && $d->inFormView) ? $d->caption : $d->title;
+$lightBox = $d->inFormView ? "data-lightbox={$d->elementName}" : "";
 
-if ($d->showImage == 0 && !$d->inListView) :
-	?>
-	<a href="<?php echo $d->fullSize; ?>"><?php echo basename($d->file);?></a>
-<?php
-else :
-	if ($d->isSlideShow) :
-		// We're building a Bootstrap slideshow, just a simple img tag
-		?>
-		<img aspect-ratio="16/9" width="400px" object-fit="cover" object-fit="center" src="<?php echo $d->fullSize; ?>" alt="<?php echo $d->title; ?>" style="margin:auto" />
-	<?php
-	else :
-		if ($d->isJoin) :
+$img    = '<img class="fabrikLightBoxImage" ' . $height . 'src="' . $d->file . '" alt="' . $alt . '" />';
+$nolinkImg    = '<img class="fabrikLightBoxImage" ' . $height . 'src="' . $d->file . '" alt="' . $alt . '" title="' . $alt . '" />';
+
+$file = $d->file;
+$fileName = basename($file);
+
+$fileInfo = pathinfo($fileName);
+$fileBaseName = $fileInfo['filename'];
+$fileExtension = $fileInfo['extension'];
+$maxLength = 12;
+
+if (strlen($fileBaseName) > $maxLength) {
+    $fileBaseName = substr($fileBaseName, 0, $maxLength) . '...';
+}
+
+$truncatedFileName = $fileBaseName . '.' . $fileExtension;
+?>
+
+<?php if ($d->showImage == 0 && !$d->inListView) : ?>
+	<a class="little-box-files" href="<?php echo $d->fullSize; ?>" download><?php echo $truncatedFileName?></a>
+<?php else : ?>
+	<?php if ($d->isSlideShow) : ?>
+			<!-- We're building a Bootstrap slideshow, just a simple img tag -->
+			<img aspect-ratio="16/9" width="400px" object-fit="cover" object-fit="center" src="<?php echo $d->fullSize; ?>" alt="<?php echo $alt; ?>" style="margin:auto" />
+
+	<?php else : ?>
+			<?php if ($d->isJoin) : ?>
+				<div class="fabrikGalleryImage" style="vertical-align: middle;text-align: center;">
+			<?php endif; ?>
+
+			<?php if ($d->makeLink) : ?>
+				<a href="<?php echo $d->fullSize; ?>" <?php echo $d->lightboxAttrs;?> title="<?php echo $alt; ?>" <?php echo $lightBox ?>>
+					<?php echo $img; ?>
+				</a>
+			<?php else :
+					echo $nolinkImg;
+				endif;
 			?>
-			<div class="fabrikGalleryImage"
-			style="vertical-align: middle;text-align: center;">
-		<?php
-		endif;
 
-		if ($d->makeLink) :
-			?>
-			<a href="<?php echo $d->fullSize; ?>" <?php echo $d->lightboxAttrs;?> title="<?php echo $d->title; ?>">
-				<?php echo $img;?>
-			</a>
-		<?php
-		else :
-			echo $nolinkImg;
-		endif;
-
-		if ($d->isJoin) : ?>
-			</div>
-		<?php
-		endif;
-	endif;
-endif;
+			<?php if ($d->isJoin) : ?>
+				</div>
+			<?php endif; ?>
+	<?php endif; ?>
+<?php endif; ?>

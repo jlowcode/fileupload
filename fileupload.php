@@ -28,6 +28,7 @@ use Joomla\CMS\Filesystem\File;
 use Joomla\Utilities\ArrayHelper;
 use Fabrik\Helpers\Php;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Uri\Uri;
 
 if (!defined('FU_DOWNLOAD_SCRIPT_NONE')) define("FU_DOWNLOAD_SCRIPT_NONE", '0');
 if (!defined('FU_DOWNLOAD_SCRIPT_TABLE')) define("FU_DOWNLOAD_SCRIPT_TABLE", '1');
@@ -2969,6 +2970,9 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
+		$document = Factory::getApplication()->getDocument();
+		$document->addStyleSheet('plugins/fabrik_element/fileupload/lib/style.css');
+
 		$this->_repeatGroupCounter = $repeatCounter;
 		$id                        = $this->getHTMLId($repeatCounter);
 		$name                      = $this->getHTMLName($repeatCounter);
