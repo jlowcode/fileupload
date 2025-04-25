@@ -17,7 +17,7 @@ $aqvmin = $aqvmin . '.' . $exten;
 		<img src="<?php echo $d->thumb;?>" alt="<?php echo $d->filename; ?>">
 	</a>
 <?php else : ?>
-	<a class="download-archive fabrik-filetype-<?php echo $d->ext;?>" title="<?php echo $d->file; ?>" href="<?php echo $d->file; ?>" download>
+	<a class="download-archive fabrik-filetype-<?php echo $d->ext;?>" title="<?php echo $d->file; ?>" href="<?php echo $d->file; ?>" target="_blank">
 		<span class="little-box-files"><?php echo $aqvmin?></span>
 	</a>
 <?php endif; ?>

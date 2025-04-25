@@ -17,7 +17,7 @@ $aqvmin = $aqvmin . $exten;
 ?>
 
 <?php if ($d->showImage == 0 && !$d->inListView) : ?>
-	<a class="little-box-files" href="<?php echo $d->fullSize; ?>" download><?php echo $aqvmin?></a>
+	<a class="little-box-files" href="<?php echo $d->fullSize; ?>" target="_blank"><?php echo $aqvmin?></a>
 <?php else : ?>
 	<?php if ($d->isSlideShow) : ?>
 			<!-- We're building a Bootstrap slideshow, just a simple img tag -->

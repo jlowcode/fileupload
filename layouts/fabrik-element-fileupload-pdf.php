@@ -17,7 +17,7 @@ $aqvmin = $aqvmin . $exten;
 <div style="vertical-align: middle;">
 
     <?php if(!$d->inFormView) : ?>
-        <a href="<?php echo $d->file ?>" download="<?php echo $d->caption ?>" target="_blank">
+        <a href="<?php echo $d->file ?>" target="_blank">
     <?php else : ?>
         <a class="download-archive fabrik-filetype-<?php echo $ext ?>" title="<?php echo $d->caption ?>" href="<?php echo $d->file ?>" target='_blank'>
     <?php endif; ?>
