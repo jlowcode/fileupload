@@ -655,7 +655,8 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
                                 $data_return[] = $data[$i];
                             }
                         }
-                        $data = $data_return;
+                        $data = empty($data_return) ? $data[0] : $data_return;
+                        $data_return = empty($data_return) ? $data[0] : $data_return;
                         $data[0] = $this->_renderListData($data_return, $thisRow, 0);
                     }
                     //If doesn't exist, render only the first image (JP)
