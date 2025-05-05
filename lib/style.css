@@ -1,10 +1,15 @@
 .little-box-files {
-    background: #2d6a6b;
-    color: #fff !important; 
+    background: #00A8AE 0% 0% no-repeat padding-box;
+    color: #000 !important; 
     font-size: 0.8rem; 
     display: inline-block; 
     min-width: 120px;  
     border-radius: 4px;
     text-align: center;
     padding: 0px 5px;
+    margin-bottom: 4px;
+}
+
+.little-box-files:last-child {
+    margin-bottom: 0px;
 }
