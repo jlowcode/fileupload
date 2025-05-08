@@ -19,7 +19,7 @@ $field = $d->field;
 <div class="plupload_container fabrikHide" id="<?php echo $id; ?>_container" style="<?php echo $dropBoxStyle; ?>">
 	<div class="plupload" id="<?php echo $id; ?>_dropList_container">
 
-		<table class="table table-striped table-condensed">
+		<table class="table table-striped table-condensed" style="border: 2px solid #eee; border-radius: 12px;">
 			<thead style="display:none">
 				<tr>
 					<th style="width:30%" ><?php echo Text::_('PLG_ELEMENT_FILEUPLOAD_FILENAME'); ?></th>
