@@ -1871,16 +1871,25 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
      * @return void
      */
     public function addColumnPrincipal() {
-        $table = $this->getTableName();
-
         $db = Factory::getContainer()->get('DatabaseDriver');
+
+		$table = $this->getTableName();
+		$columnName = 'main_image';
+
+		$query = "SELECT * FROM information_schema.COLUMNS WHERE COLUMN_NAME = '$columnName' AND TABLE_NAME = '" . $table . "'";
+		$db->setQuery($query);
+		$mainImageColumnExists = $db->loadResult();
+		if ($mainImageColumnExists) {
+			return;
+		}
+
         $db->setQuery("
 	        ALTER TABLE " . $table .
             " ADD COLUMN" .
-            " main_image text"
+            " $columnName text"
         );
         try {
-            //$db->execute();
+            $db->execute();
         } catch (RuntimeException $e) {
             $err = new stdClass;
             $err->error = $e->getMessage();
