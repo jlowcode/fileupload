@@ -625,6 +625,8 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		if (FArrayHelper::emptyIsh($data))
 		{
 			$data[0] = $this->_renderListData('', $thisRow, 0);
+			$data = json_encode($data);
+			$rendered     = parent::renderListData($data, $thisRow, $opts);
 		}
 		else
 		{
