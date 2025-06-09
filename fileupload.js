@@ -1043,10 +1043,14 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
          * @return {jQuery}
          */
         deleteImgButton: function () {
-            if (Fabrik.bootstrapped) {
+            self = this;
+            
+            if(self.options.canDeleteFromAjax === false) {
+                return;
+            }
 
-                var icon = Fabrik.jLayouts['fabrik-icon-delete'],
-                    self = this;
+            if (Fabrik.bootstrapped) {
+                var icon = Fabrik.jLayouts['fabrik-icon-delete'];
                 var linkHref = window.location.href.indexOf('#') > -1 ? window.location.href : window.location.href + '#';
                 return jQuery(document.createElement('td')).addClass(this.options.spanNames[1] + ' plupload_file_action').append(
                     jQuery(document.createElement('a'))

@@ -489,6 +489,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$opts->isCarousel       = $params->get('fu_show_image') === '3' && !$this->isEditable();
 		$opts->isZoom           = false;
 		$opts->htmlId           = $id;
+		$opts->canDeleteFromAjax = $this->canDeleteFromAjax();
 
 		//Check if the option Principal is selected (JP)
         $opts->principal = ($params->get('fu_show_image_in_table') === '3') ? true : false;
@@ -4577,5 +4578,20 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		}
 
 		return $filename;
+	}
+
+	/**
+	 * Check if the element can be deleted from ajax considering the workflow rules
+	 *
+	 * @return  bool
+	 */
+	private function canDeleteFromAjax() 
+	{
+		$listModel = $this->getListModel();
+
+		$formParams = $listModel->getFormModel()->getParams();
+		$canDeleteFromAjax = !in_array(false, FabrikWorker::getPluginManager()->runPlugins("canApproveRequests", $listModel->getFormModel(), "form", Array()));
+
+		return $canDeleteFromAjax;
 	}
 }
