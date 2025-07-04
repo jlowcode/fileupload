@@ -626,8 +626,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		if (FArrayHelper::emptyIsh($data))
 		{
 			$data[0] = $this->_renderListData('', $thisRow, 0);
-			$data = json_encode($data);
-			$rendered     = parent::renderListData($data, $thisRow, $opts);
+			$rendered = $this->_renderListData('', $thisRow, 0);
 		}
 		else
 		{
@@ -1052,14 +1051,28 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			$render->renderListData($this, $params, $data, $thisRow);
 		}
 
-		if ($render->output == '' && $params->get('default_image') != '')
+		$defaultImage = $params->get('default_image');
+		if ($render->output == '' && $defaultImage != '')
 		{
-			$defaultURL     = $storage->getFileUrl(str_replace(COM_FABRIK_BASE, '', $params->get('default_image')));
-			$input = $this->app->input;
-			$formModel = $this->getFormModel();
-			$listModel = $formModel->getListModel();
-			$url_detais = COM_FABRIK_LIVESITE . "index.php?option=com_fabrik&view=details&Itemid={$input->get('Itemid')}&formid={$formModel->getId()}&rowid={$thisRow->__pk_val}&listid={$listModel->getId()}";
-			$render->output = '<a href="' . $url_detais . '"><img class="fabrikDefaultImage" src="' . $defaultURL . '" alt="image" /></a>';
+			if($defaultImage == 'default-card') {
+				$elName = $this->getTableName() . '___name_raw';
+				$dataName = $thisRow->$elName;
+				$dataName = empty($dataName) ? 'NF' : $dataName;
+                preg_match_all('/[bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ]/u', $dataName, $consonants);
+                $span = strtoupper($consonants[0][0].$consonants[0][1]);
+				$r = rand(220, 250);
+				$g = rand(220, 250);
+				$b = rand(220, 250);
+				$style = "background: rgba($r, $g, $b, 1)";
+				$render->output = '<div class="div-mode-img-card"><div class="mode-img-card-default" style="' . $style . '">' . $span . '</div></div>';
+			} else {
+				$defaultURL = $storage->getFileUrl(str_replace(COM_FABRIK_BASE, '', $defaultImage));
+				$input = $this->app->input;
+				$formModel = $this->getFormModel();
+				$listModel = $formModel->getListModel();
+				$url_detais = COM_FABRIK_LIVESITE . "index.php?option=com_fabrik&view=details&Itemid={$input->get('Itemid')}&formid={$formModel->getId()}&rowid={$thisRow->__pk_val}&listid={$listModel->getId()}";
+				$render->output = '<a href="' . $url_detais . '"><img class="fabrikDefaultImage" src="' . $defaultURL . '" alt="image" /></a>';
+			}
 		}
 		else
 		{
