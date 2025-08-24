@@ -1055,16 +1055,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		if ($render->output == '' && $defaultImage != '')
 		{
 			if($defaultImage == 'default-card') {
-				$elName = $this->getTableName() . '___name_raw';
-				$dataName = $thisRow->$elName;
-				$dataName = empty($dataName) ? 'NF' : $dataName;
-                preg_match_all('/[bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ]/u', $dataName, $consonants);
-                $span = strtoupper($consonants[0][0].$consonants[0][1]);
-				$r = rand(220, 250);
-				$g = rand(220, 250);
-				$b = rand(220, 250);
-				$style = "background: rgba($r, $g, $b, 1)";
-				$render->output = '<div class="div-mode-img-card"><div class="mode-img-card-default" style="' . $style . '">' . $span . '</div></div>';
+				$render->output = $this->getDefaultCard($thisRow);
 			} else {
 				$defaultURL = $storage->getFileUrl(str_replace(COM_FABRIK_BASE, '', $defaultImage));
 				$input = $this->app->input;
@@ -1095,6 +1086,32 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		{
 			return $render->output;
 		}
+	}
+
+	/**
+	 * This method return the default card for the fileupload element
+	 * 
+	 */
+	public function getDefaultCard($thisRow=[])
+	{
+		$params = $this->getParams();
+
+		if($params->get('default_image') != 'default-card') {
+			return false;
+		}
+
+		$elName = $this->getTableName() . '___name_raw';
+		$dataName = $thisRow->$elName;
+		$dataName = empty($dataName) ? 'NF' : $dataName;
+		preg_match_all('/[bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ]/u', $dataName, $consonants);
+		$span = strtoupper($consonants[0][0] . $consonants[0][1]);
+		$r = rand(220, 250);
+		$g = rand(220, 250);
+		$b = rand(220, 250);
+		$style = "background: rgba($r, $g, $b, 1)";
+		$output = '<div class="div-mode-img-card"><div class="mode-img-card-default" style="' . $style . '">' . $span . '</div></div>';
+
+		return $output;
 	}
 
 	/**
@@ -2008,7 +2025,9 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
     }
 
     public function createPdfThumb ($path_pdf, $path_thumb) {
-        if ((!File::exists($path_pdf)) || (File::exists($path_thumb))) {
+		$path_pdf = JPATH_SITE . '/' . $path_pdf;
+
+        if (!File::exists($path_pdf) || File::exists($path_thumb)) {
             return false;
         }
 
@@ -2115,9 +2134,10 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
             $this->updatePrincipal();
         }
 
-        if (!(bool) $params->get('upload_show_thumb')) {
+		// Why is it here?
+        /*if (!(bool) $params->get('upload_show_thumb')) {
             return;
-        }
+        }*/
 
         $thumb_dir_path = $params->get('thumb_dir');
         $shouldSort = (bool) $params->get('upload_ordenacao');
@@ -2129,7 +2149,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
         $name = $this->getElement()->name;
         $files = $formModel->fullFormData[$fullName];
 
-        if (!(bool) $params->get('ajax_upload')) {
+        if (!$this->isAjax()) {
             $arr = array();
             $arr[] = $files;
             $files = $arr;
@@ -2141,6 +2161,10 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 
         $i = count($files)-1;
         foreach ($files as $file) {
+			if(empty($file)) {
+				return;
+			}
+
             $fileFormated = str_replace('\\', '/', $file);
             $fileName = end(explode('/', $fileFormated));
             $ext = end(explode('.', $fileName));
@@ -2154,8 +2178,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
             $fileNameWithoutExt = str_replace('.' . $ext, '', $fileName);
             if ($ext !== 'pdf') {
                 $path_thumb_img = JPATH_BASE . '/' . $thumb_dir_path . '/' . $fileName;
-            }
-            else {
+            } else {
                 $path_thumb_img = JPATH_BASE . '/' . $thumb_dir_path . '/' . $fileNameWithoutExt . '.png';
             }
 
@@ -2178,30 +2201,33 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
                 }
             }
 
-            $query = $db->getQuery(true);
-            $query->select('id, params')->from($table . '_repeat_' . $name)->where('parent_id = ' . (int)$rowId . ' AND ' . $name . ' = "' . $db->escape($file) . '"');
-            $db->setQuery($query);
+			if($this->isAjax()) {
+	            $query = $db->getQuery(true);
+				$query->select('id, params')->from($table . '_repeat_' . $name)->where('parent_id = ' . (int)$rowId . ' AND ' . $name . ' = "' . $db->escape($file) . '"');
+				$db->setQuery($query);
 
-            $result = $db->loadAssoc();
-            $id = $result['id'];
-            $params_1 = $result['params'];
-            if ($params_1) {
-                $params_1 = json_decode($params_1);
-            }
+				$result = $db->loadAssoc();
+				$id = $result['id'];
+				$params_1 = $result['params'];
+				if ($params_1) {
+					$params_1 = json_decode($params_1);
+				}
 
-			$params_1 = (Object) $params_1;
-            if ($shouldCaption) {
-                $params_1->caption = $captions[$i];
-            }
+				$params_1 = (Object) $params_1;
+				if ($shouldCaption) {
+					$params_1->caption = $captions[$i];
+				}
 
-            if ($shouldSort) {
-                $params_1->ordenacao = $orders[$i];
-            }
-            $params_1 = json_encode($params_1);
-            $obj = new stdClass();
-            $obj->id = $id;
-            $obj->params = $params_1;
-            $insert = $db->updateObject($table . '_repeat_' . $name, $obj, 'id');
+				if ($shouldSort) {
+					$params_1->ordenacao = $orders[$i];
+				}
+
+				$params_1 = json_encode($params_1);
+				$obj = new stdClass();
+				$obj->id = $id;
+				$obj->params = $params_1;
+				$insert = $db->updateObject($table . '_repeat_' . $name, $obj, 'id');
+			}
 
             $i--;
         }
