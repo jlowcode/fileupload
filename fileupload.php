@@ -232,6 +232,11 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 			Html::slideshow();
 		}
 
+		if($this->requiresLightBox()) {
+			FabrikHelperHTML::script('/plugins/fabrik_element/fileupload/lib/lightbox/js/lightbox.js');
+			Html::stylesheet('/plugins/fabrik_element/fileupload/lib/lightbox/css/lightbox.css');
+		}
+
 		if (array_key_exists($key, $shim) && isset($shim[$key]->deps))
 		{
 			$merged = array_merge($shim[$key]->deps, $s->deps);
@@ -1104,7 +1109,9 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	 */
 	public function requiresLightBox()
 	{
-		return true;
+		$fbConfig = ComponentHelper::getParams('com_fabrik');
+
+		return $fbConfig->get('include_lightbox_js', 1) == 2;
 	}
 
 	/**
