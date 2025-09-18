@@ -66,7 +66,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
                     });
 
                     this.options.files = toObject(newFiles);
-                    self = this;
+                    var self = this;
                 }
             }
 
@@ -1043,7 +1043,7 @@ define(['jquery', 'fab/fileelement'], function (jQuery, FbFileElement) {
          * @return {jQuery}
          */
         deleteImgButton: function () {
-            self = this;
+            var self = this;
             
             if(self.options.canDeleteFromAjax === false) {
                 return;
