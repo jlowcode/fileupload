@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Filesystem\File;
 use Joomla\String\StringHelper;
+use Joomla\CMS\Factory;
 
 /**
  * Fileupload adaptor to render uploaded PDFs
@@ -56,7 +57,7 @@ class PdfRenderModel
 
 	private function getThumbnail(&$model, &$params, $file)
 	{
-		if ($this->inTableView || ($params->get('make_thumbnail') == '1' && $params->get('fu_show_image') == 1))
+		if ($this->inTableView || ($params->get('make_thumbnail') == '1' && ($params->get('fu_show_image') == 1 || $params->get('fu_show_image') == 2)))
 		{
 			if (!$params->get('make_thumbnail', false))
 			{
@@ -151,6 +152,7 @@ class PdfRenderModel
 		$displayData->thumb    = $this->getThumbnail($model, $params, $file);
 		$displayData->make_pdf_thumb = $params->get('fu_make_pdf_thumb');
 		$displayData->showImage = (int) $params->get('fu_show_image');
+		$displayData->defaultCard = $model->getDefaultCard();
 
 		$this->output = $layout->render($displayData);
 	}
@@ -169,12 +171,137 @@ class PdfRenderModel
 	 */
 	public function renderCarousel($id = 'carousel', $data = array(), $model = null, $params = null, $thisRow = null, $nav = true)
 	{
-		$rendered = '';
-
 		/**
-		 * @TODO - build it!
+		 * @TODO - build it! Builded by Jlowcode
 		 */
+        $db = Factory::getContainer()->get('DatabaseDriver');
 
-		return $rendered;
+ 		$this->inTableView = true;
+		$storage = $model->getStorage();
+		$id .= '_carousel';
+		$layout         = $model->getLayout('slick-carousel');
+		$layoutData     = new stdClass;
+		$layoutData->id = $id;
+		list($layoutData->width, $layoutData->height) = $this->imageDimensions($params);
+
+		if (!empty($data))
+		{
+			$imgs = array();
+			$i    = 0;
+
+			$ordering = (bool) $params->get('upload_ordenacao');
+			if ($ordering) {
+                $rowId = $model->getFormModel()->getRowId();
+                $elementName = $model->element->name;
+                $table = $model->getFormModel()->getTableName() . '_repeat_' . $elementName;
+                $new_data = array();
+                $withoutOrdering = array();
+                foreach ($data as $item) {
+                    $query = $db->getQuery(true);
+                    $query->select('params')
+						->from($table)
+						->where("parent_id =  {$rowId} AND {$elementName} = '{$item}'");
+                    $db->setQuery($query);
+                    $result = $db->loadResult();
+                    $result = json_decode($result);
+
+                    $obj = new stdClass();
+                    $obj->data = $item;
+                    if ($result->ordenacao) {
+                        $obj->ordenacao = $result->ordenacao;
+                        $new_data[] = $obj;
+                    } else {
+                        $withoutOrdering[] = $obj;
+                    }
+                }
+                usort($new_data, function ($a, $b) {
+                    if ((($a->ordenacao > $b->ordenacao)) || ((!$a->ordenacao) && ($b->ordenacao))) {
+                        return 1;
+                    }
+                    if ((($a->ordenacao < $b->ordenacao)) || (($a->ordenacao) && (!$b->ordenacao))) {
+                        return -1;
+                    }
+                    return 0;
+                });
+
+                $new_data = array_merge($new_data, $withoutOrdering);
+
+                foreach ($new_data as $item) {
+                    $model->_repeatGroupCounter = $i++;
+                    $this->renderListData($model, $params, $item->data, $thisRow);
+                    $imgs[] = $this->output;
+                }
+            } else {
+                foreach ($data as $img) {
+                    $model->_repeatGroupCounter = $i++;
+                    $this->renderListData($model, $params, $img, $thisRow);
+                    $imgs[] = $this->output;
+                }
+            }
+
+			if (count($imgs) == 1)
+			{
+				return $imgs[0];
+			}
+		}
+
+		$layoutData->imgs = $imgs;
+		$layoutData->nav = $nav;
+
+		return $layout->render($layoutData);
+	}
+
+	/**
+	 * Get the image width / height
+	 *
+	 * @param   JParameter $params Params
+	 *
+	 * @since   4.1.1
+	 *
+	 * @return  array ($width, $height)
+	 */
+	private function imageDimensions($params)
+	{
+		$width  = $params->get('fu_main_max_width');
+		$height = $params->get('fu_main_max_height');
+
+		if (!$this->fullImageInRecord($params))
+		{
+			if ($params->get('fileupload_crop'))
+			{
+				$width  = $params->get('fileupload_crop_width');
+				$height = $params->get('fileupload_crop_height');
+			}
+			else
+			{
+				$width  = $params->get('thumb_max_width');
+				$height = $params->get('thumb_max_height');
+			}
+		}
+
+		return array($width, $height);
+	}
+
+	/**
+	 * When in form or detailed view, do we want to show the full image or thumbnail/link?
+	 *
+	 * @param   object &$params params
+	 *
+	 * @return  bool
+	 */
+	private function fullImageInRecord(&$params)
+	{
+		if ($this->inTableView)
+		{
+			return ($params->get('make_thumbnail') || $params->get('fileupload_crop')) ? false : true;
+		}
+
+
+		if (($params->get('make_thumbnail') || $params->get('fileupload_crop')) && $params->get('fu_show_image') == 1)
+		{
+			return false;
+		}
+
+		return true;
 	}
 }

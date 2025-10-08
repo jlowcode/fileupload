@@ -26,6 +26,9 @@ $aqvmin = $aqvmin . $exten;
         <?php if(File::exists(JPATH_BASE . '/' . $d->path_thumb_dir . '/' . $d->name_thumb)) : ?>
             <img src="<?php echo $d->path_thumb; ?>" alt="<?php if ($d->caption) echo $d->caption; else echo $d->name_thumb; ?>"/>
 
+        <?php elseif ($d->defaultCard && !isset($d->thumb)) : ?>
+            <?php echo $d->defaultCard; ?>
+
         <?php elseif ((isset($d->thumb) && !empty($d->thumb))) : ?>
             <img src="<?php echo $d->thumb ?>" alt="<?php echo $d->fileName?>"/>
 
