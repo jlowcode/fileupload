@@ -135,7 +135,7 @@ class VideoRenderModel extends FabModel
 			$rendered = '
 			<div id="' . $id . '"></div>
 			';
-			$input = $this->pp->input;
+			$input = $this->app->input;
 
 			if ($input->get('format') != 'raw')
 			{
