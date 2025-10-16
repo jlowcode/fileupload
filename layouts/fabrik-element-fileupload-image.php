@@ -7,8 +7,8 @@ $alt = ($d->caption && $d->inFormView) ? $d->caption : $d->title;
 $lightBox = $d->inFormView ? "data-lightbox={$d->elementName}" : "";
 
 $classThumb = 'mode-img-card';
-$img    = '<img class="fabrikLightBoxImage ' . $classThumb . '" src="' . $d->file . '" alt="' . $alt . '" />';
-$nolinkImg    = '<img class="fabrikLightBoxImage ' . $classThumb . '" src="' . $d->file . '" alt="' . $alt . '" title="' . $alt . '" />';
+$img    = '<img class="fabrikLightBoxImage ' . $classThumb . '" src="' . $d->file . '" alt="' . $alt . '" loading="lazy"/>';
+$nolinkImg    = '<img class="fabrikLightBoxImage ' . $classThumb . '" src="' . $d->file . '" alt="' . $alt . '" title="' . $alt . '" loading="lazy"/>';
 
 $dfilename = explode(".", $d->file);
 $exten = end($dfilename);
@@ -23,7 +23,7 @@ $aqvmin = $aqvmin . $exten;
 	<?php if ($d->isSlideShow) : ?>
 			<!-- We're building a Bootstrap slideshow, just a simple img tag -->
 			<div class="div-<?php echo $classThumb; ?>">
-				<img class="<?php echo $classThumb; ?>" src="<?php echo $d->fullSize; ?>" alt="<?php echo $alt; ?>"/>
+				<img class="<?php echo $classThumb; ?>" src="<?php echo $d->fullSize; ?>" alt="<?php echo $alt; ?>" loading="lazy"/>
 			</div>
 	<?php else : ?>
 			<?php if ($d->isJoin) : ?>
