@@ -1916,7 +1916,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$table = $this->getTableName();
 		$columnName = 'main_image';
 
-		$query = "SELECT * FROM information_schema.COLUMNS WHERE COLUMN_NAME = '$columnName' AND TABLE_NAME = '" . $table . "'";
+		$query = "SELECT * FROM information_schema.COLUMNS WHERE COLUMN_NAME = '$columnName' AND TABLE_NAME = '" . $table . "' AND TABLE_SCHEMA = (SELECT DATABASE())";
 		$db->setQuery($query);
 		$mainImageColumnExists = $db->loadResult();
 		if ($mainImageColumnExists) {
@@ -2154,7 +2154,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
         $table = $this->getTableName();
         $fullName = $this->getFullName();
         $name = $this->getElement()->name;
-        $files = $formModel->fullFormData[$fullName];
+        $files = $formModel->fullFormData[$fullName] ?? [];
 
         if (!$this->isAjax()) {
             $arr = array();
